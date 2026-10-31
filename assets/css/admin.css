@@ -7,8 +7,8 @@
 .login-card > p { margin-bottom: 22px; }
 .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .check { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.9rem; margin: 4px 0 18px; }
-.msg { min-height: 1.4em; margin-top: 12px; font-size: 0.9rem; color: #ff9b9b; }
-.msg.ok { color: #7ee2a8; }
+.msg { min-height: 1.4em; margin-top: 12px; font-size: 0.9rem; color: var(--danger); }
+.msg.ok { color: var(--success); }
 .help { margin-top: 10px; color: var(--muted); font-size: 0.9rem; }
 .help summary { cursor: pointer; color: var(--accent); font-weight: 600; }
 .help ol { padding-left: 20px; display: grid; gap: 6px; margin-top: 10px; }
@@ -34,8 +34,8 @@
 .top-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .status { color: var(--muted); font-size: 0.86rem; flex: 1; min-width: 160px; }
 .status.dirty { color: var(--accent-2); }
-.status.ok { color: #7ee2a8; }
-.status.err { color: #ff9b9b; }
+.status.ok { color: var(--success); }
+.status.err { color: var(--danger); }
 
 .layout { display: grid; grid-template-columns: 220px 1fr; gap: 24px; width: min(1100px, 100% - 32px); margin: 24px auto 80px; }
 .tabs { display: flex; flex-direction: column; gap: 4px; position: sticky; top: 84px; align-self: start; }
@@ -55,7 +55,7 @@
 .item:not(.open) .item-body { display: none; }
 .icon-btn { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; width: 32px; height: 32px; display: grid; place-items: center; cursor: pointer; flex: none; font-size: 0.9rem; }
 .icon-btn:hover { color: var(--text); border-color: rgba(148, 170, 255, 0.35); }
-.icon-btn.danger:hover { color: #ff9b9b; border-color: rgba(255, 155, 155, 0.4); }
+.icon-btn.danger:hover { color: var(--danger); border-color: rgba(255, 155, 155, 0.4); }
 .add-btn { width: 100%; border-style: dashed; }
 
 .img-field { display: flex; gap: 14px; align-items: center; }
@@ -71,3 +71,13 @@
   .grid2, .row2 { grid-template-columns: 1fr; }
   .login-card { padding: 24px 18px; }
 }
+
+.warn { color: var(--warning); font-size: 0.8rem; }
+.warn:empty { display: none; }
+.item-toggle {
+  flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; padding: 0; border: 0; background: none;
+  color: var(--text); font: inherit; text-align: left; cursor: pointer;
+}
+.item-head { cursor: default; }
+.notice-box { padding: 14px 16px; border-radius: 12px; background: rgba(245, 181, 68, 0.1); border: 1px solid rgba(245, 181, 68, 0.3); color: var(--warning); font-size: 0.9rem; margin-bottom: 16px; }
+.topbar h1 { font-size: 1rem; margin: 0; }

@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; img-src 'self' data: https:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Política de Reembolso</title>
+  <meta name="description" content="Direito de arrependimento, cancelamentos, reagendamentos e reembolsos.">
+  <meta name="theme-color" content="#0a0f1f">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <a class="brand" href="index.html"><span class="brand-mark" aria-hidden="true"></span><span data-bind="name">Início</span></a>
+      <button type="button" class="menu-btn" id="menuBtn" aria-label="Abrir menu" aria-expanded="false" aria-controls="menu"></button>
+      <nav class="menu" id="menu" aria-label="Principal">
+        <a href="index.html#servicos">Serviços</a>
+        <a href="privacidade.html">Privacidade</a>
+        <a href="termos.html">Termos</a>
+        <a href="reembolso.html" aria-current="page">Reembolso</a>
+        <a href="index.html#contato" class="btn btn-sm btn-primary">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="conteudo" tabindex="-1" class="legal">
+    <div class="wrap legal-wrap">
+      <h1>Política de Reembolso</h1>
+      <p class="updated">Última atualização: <span data-bind="updatedAt">31/10/2026</span></p>
+
+      <p class="lead">Regras de desistência, cancelamento e reembolso para os serviços e produtos de <strong data-bind="legalName"></strong><span data-if="cnpj">, CNPJ <strong data-bind="cnpj"></strong></span><span data-if="address">, com endereço em <span data-bind="address"></span></span>.</p>
+
+      <section id="arrependimento">
+        <h2>1. Direito de arrependimento: 7 dias</h2>
+        <p>Como a contratação é feita pela internet ou pelo WhatsApp, você pode desistir em até <strong>7 (sete) dias</strong>, sem precisar justificar, conforme o art. 49 do Código de Defesa do Consumidor e o Decreto nº 7.962/2013.</p>
+        <ul>
+          <li><strong>Serviços:</strong> o prazo conta a partir do pagamento ou da confirmação da contratação.</li>
+          <li><strong>Cursos e produtos digitais:</strong> o prazo conta a partir da liberação do acesso.</li>
+          <li><strong>Produtos físicos:</strong> o prazo conta a partir do recebimento. O custo de devolução, nesse caso, é nosso.</li>
+        </ul>
+        <p>Dentro desse prazo, devolvemos <strong>o valor integral</strong> pago.</p>
+      </section>
+
+      <section id="cancelamento">
+        <h2>2. Cancelamento e reagendamento de serviços</h2>
+        <p>Para mentorias, aulas particulares, treinamentos e palestras com data marcada, depois do prazo de arrependimento:</p>
+        <ul>
+          <li><strong>Aviso com pelo menos <span data-bind="cancelHours">24</span> horas de antecedência:</strong> você escolhe entre reagendar sem custo ou receber o reembolso integral da sessão.</li>
+          <li><strong>Aviso com menos de <span data-bind="cancelHours">24</span> horas:</strong> a sessão pode ser reagendada uma vez, sem custo.</li>
+          <li><strong>Ausência sem aviso:</strong> a sessão pode ser considerada realizada, exceto em caso fortuito ou de força maior (por exemplo, problema de saúde comprovado).</li>
+          <li><strong>Se nós precisarmos cancelar:</strong> você escolhe entre reagendar ou receber o reembolso integral.</li>
+        </ul>
+        <p>Pacotes de sessões: o reembolso é proporcional às sessões ainda não realizadas.</p>
+        <p>Desenvolvimento de aplicações: as condições de cancelamento seguem o orçamento aprovado. As etapas já entregues são cobradas proporcionalmente.</p>
+      </section>
+
+      <section id="produtos-digitais">
+        <h2>3. Cursos, materiais e produtos após 7 dias</h2>
+        <p>Depois do prazo de arrependimento, não há reembolso por desistência. Continuam valendo os seus direitos em caso de defeito ou de serviço não prestado como combinado (arts. 18, 20 e 26 do Código de Defesa do Consumidor). Nesses casos, corrigimos o problema, refazemos o serviço ou devolvemos o valor.</p>
+      </section>
+
+      <section id="como-solicitar">
+        <h2>4. Como pedir cancelamento ou reembolso</h2>
+        <p>Envie pelo WhatsApp ou por e-mail: seu nome, o item contratado, a data do pagamento e, se possível, o comprovante. Confirmamos o recebimento do pedido.</p>
+        <div class="legal-actions">
+          <a class="btn btn-wa" data-wa="Olá! Quero solicitar cancelamento/reembolso. Nome: | Item: | Data do pagamento:" href="#como-solicitar" target="_blank" rel="noopener noreferrer">Pedir reembolso pelo WhatsApp<span class="sr-only"> (abre em nova aba)</span></a>
+          <a class="btn" data-if="email" data-mailto="Pedido de cancelamento ou reembolso" href="#como-solicitar">Pedir reembolso por e-mail</a>
+        </div>
+      </section>
+
+      <section id="prazo-devolucao">
+        <h2>5. Prazo e forma de devolução</h2>
+        <p>O reembolso é feito via Pix, para a mesma conta que fez o pagamento, em até <strong><span data-bind="refundDays">7</span> dias</strong> após a confirmação do pedido.</p>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer" id="footer"></footer>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/compliance.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/legal.js"></script>
+</body>
+</html>

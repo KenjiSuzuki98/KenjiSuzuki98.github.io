@@ -6,7 +6,13 @@
     "bio": "Sou professor e consultor com atuação em Inteligência Artificial, Eletrônica, Robótica, Automação Industrial e Gestão de Empreendimentos. Ajudo pessoas e empresas a aprender, inovar e colocar projetos em prática — com mentorias, treinamentos, aulas particulares, palestras e desenvolvimento de aplicações sob medida.",
     "photo": "assets/uploads/foto-perfil.webp",
     "location": "Brasil",
-    "cnpj": ""
+    "photoAlt": "Foto de Kenji Suzuki sorrindo, de terno azul-marinho e camisa escura"
+  },
+  "company": {
+    "legalName": "",
+    "tradeName": "Prof. Kenji Suzuki",
+    "cnpj": "",
+    "address": ""
   },
   "areas": [
     "Inteligência Artificial",
@@ -42,7 +48,9 @@
       "priceNote": "sob consulta",
       "buyable": true,
       "pixKeyType": "",
-      "pixKey": ""
+      "pixKey": "",
+      "imageAlt": "",
+      "imageCredit": ""
     },
     {
       "title": "Treinamentos para Empresas",
@@ -53,7 +61,9 @@
       "priceNote": "sob consulta",
       "buyable": false,
       "pixKeyType": "",
-      "pixKey": ""
+      "pixKey": "",
+      "imageAlt": "",
+      "imageCredit": ""
     },
     {
       "title": "Desenvolvimento de Aplicações",
@@ -64,7 +74,9 @@
       "priceNote": "orçamento sob medida",
       "buyable": false,
       "pixKeyType": "",
-      "pixKey": ""
+      "pixKey": "",
+      "imageAlt": "",
+      "imageCredit": ""
     },
     {
       "title": "Aula Particular",
@@ -75,7 +87,9 @@
       "priceNote": "sob consulta",
       "buyable": true,
       "pixKeyType": "",
-      "pixKey": ""
+      "pixKey": "",
+      "imageAlt": "",
+      "imageCredit": ""
     },
     {
       "title": "Palestras",
@@ -86,9 +100,20 @@
       "priceNote": "sob consulta",
       "buyable": false,
       "pixKeyType": "",
-      "pixKey": ""
+      "pixKey": "",
+      "imageAlt": "",
+      "imageCredit": ""
     }
   ],
   "products": [],
-  "portfolio": []
+  "portfolio": [],
+  "testimonials": [],
+  "policies": {
+    "cancelHours": 24,
+    "refundDays": 7,
+    "updatedAt": "2026-10-31"
+  },
+  "analytics": {
+    "gaId": ""
+  }
 }

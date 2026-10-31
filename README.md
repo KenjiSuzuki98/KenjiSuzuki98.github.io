@@ -38,3 +38,32 @@ python -m http.server 8000
 ```
 
 Depois abra http://localhost:8000.
+
+## Conformidade legal e acessibilidade
+
+O site foi feito para reduzir riscos com a LGPD, o Código de Defesa do Consumidor,
+o Decreto 7.962/2013 (comércio eletrônico) e a Lei Brasileira de Inclusão:
+
+- **Páginas legais:** `privacidade.html`, `termos.html` e `reembolso.html`, preenchidas
+  automaticamente com os dados da aba **Empresa & Legal** do painel.
+- **Coleta mínima:** sem cadastro, sem banco de dados, sem cookies próprios. Fontes e
+  gerador de QR Code são servidos pelo próprio site (nenhuma chamada a terceiros).
+- **Google Analytics:** desligado por padrão. Se você informar o ID no painel, o site
+  mostra o aviso de cookies e só mede visitas de quem aceitar.
+- **Depoimentos:** só aparecem com a caixa de autorização marcada.
+- **Números de destaque:** só aparecem com a fonte/comprovação preenchida.
+- **Promessas:** o painel avisa quando um texto tem expressões como "garantido" ou "100%".
+
+> Isto reduz riscos, mas não substitui a orientação de um advogado.
+
+## Testes automáticos
+
+```bash
+npm install
+npm test
+```
+
+São 63 testes cobrindo: páginas legais, cookies e Google Analytics, coleta mínima,
+scripts de terceiros, auditoria de acessibilidade (axe-core), contraste WCAG AA,
+navegação por teclado, textos alternativos, botões claros, depoimentos, promessas
+e dados da empresa. Eles também rodam no GitHub a cada alteração (aba **Actions**).

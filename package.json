@@ -1,0 +1,15 @@
+{
+  "name": "site-pessoal",
+  "private": true,
+  "description": "Site pessoal estático (GitHub Pages) com testes de conformidade legal e acessibilidade.",
+  "scripts": {
+    "test": "node --test --test-concurrency=1 tests/*.test.js"
+  },
+  "devDependencies": {
+    "@fontsource/inter": "^5.1.0",
+    "@fontsource/space-grotesk": "^5.1.0",
+    "axe-core": "^4.10.2",
+    "jsdom": "^25.0.1",
+    "qrcode-generator": "^1.4.4"
+  }
+}

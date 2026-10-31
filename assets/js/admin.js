@@ -164,6 +164,8 @@
     ['services', 'Serviços', 'training'],
     ['products', 'Produtos / Loja', 'bag'],
     ['portfolio', 'Portfólio', 'spark'],
+    ['testimonials', 'Depoimentos', 'mentor'],
+    ['empresa', 'Empresa & Legal', 'book'],
   ];
 
   const KEY_TYPES = { email: 'E-mail', telefone: 'Telefone', cpf: 'CPF', cnpj: 'CNPJ', aleatoria: 'Chave aleatória' };
@@ -171,11 +173,15 @@
   function openEditor() {
     data.profile ||= {}; data.contact ||= {}; data.pix ||= {};
     data.services ||= []; data.products ||= []; data.portfolio ||= []; data.areas ||= []; data.stats ||= [];
+    data.company ||= {}; data.policies ||= {}; data.analytics ||= {}; data.testimonials ||= [];
+    // Versões antigas guardavam o CNPJ no perfil.
+    if (data.profile.cnpj && !data.company.cnpj) data.company.cnpj = data.profile.cnpj;
+    delete data.profile.cnpj;
     $('#loginView').hidden = true;
     $('#editorView').hidden = false;
     $('#tabs').replaceChildren(
       ...TABS.map(([id, label, ic]) =>
-        el('button', { class: 'tab', 'data-tab': id, onclick: () => { current = id; renderPanel(); } }, html(icon(ic)), label)
+        el('button', { type: 'button', class: 'tab', 'data-tab': id, onclick: () => { current = id; renderPanel(); } }, html(icon(ic)), label)
       )
     );
     renderPanel();
@@ -185,13 +191,29 @@
     document.querySelectorAll('.tab').forEach((t) => t.classList.toggle('active', t.dataset.tab === current));
     const p = $('#panel');
     p.replaceChildren();
-    ({ perfil: panelPerfil, contato: panelContato, pix: panelPix, services: () => panelList('services'), products: () => panelList('products'), portfolio: panelPortfolio })[current](p);
+    ({
+      perfil: panelPerfil, contato: panelContato, pix: panelPix, empresa: panelEmpresa,
+      services: () => panelList('services'), products: () => panelList('products'),
+      portfolio: panelPortfolio, testimonials: panelTestimonials,
+    })[current](p);
   }
+
+  // Aviso padrão para textos: aponta promessas que não dá para comprovar.
+  const claimWarning = (v) => {
+    const found = Compliance.findRiskyClaims(v);
+    return found.length ? `Atenção: evite promessas que você não consegue comprovar ("${found[0]}"). O CDC proíbe publicidade enganosa.` : '';
+  };
+
+  // Campos ligados a um objeto, com caminho (ex.: "profile.tagline") para identificação.
+  const bound = (ns, obj) => (key, label, type, opts = {}) => field(obj, key, label, type, { ...opts, path: `${ns}.${key}` });
 
   // Campo ligado diretamente a obj[key].
   function field(obj, key, label, type = 'text', opts = {}) {
     let input;
-    const onChange = (v) => { obj[key] = v; markDirty(); opts.onChange?.(v); };
+    const warn = el('small', { class: 'warn', 'aria-live': 'polite' });
+    const validate = opts.validate || (type === 'text' || type === 'textarea' ? claimWarning : null);
+    const check = (v) => { if (validate) warn.textContent = validate(v) || ''; };
+    const onChange = (v) => { obj[key] = v; markDirty(); check(v); opts.onChange?.(v); };
     if (type === 'textarea') {
       input = el('textarea', { placeholder: opts.placeholder || '' });
       input.value = obj[key] ?? '';
@@ -216,7 +238,8 @@
       input.value = obj[key] ?? '';
       input.addEventListener('input', () => onChange(input.value));
     }
-    return el('label', { class: 'f' }, el('span', {}, label), input, opts.hint ? el('small', {}, opts.hint) : null);
+    check(input.value);
+    return el('label', { class: 'f', 'data-field': opts.path }, el('span', {}, label), input, opts.hint ? el('small', {}, opts.hint) : null, warn);
   }
 
   function imageField(obj, key, label) {
@@ -288,18 +311,18 @@
 
   function panelPerfil(p) {
     const d = data.profile;
+    const f = bound('profile', d);
     head(p, 'Perfil', 'Seu nome, foto e apresentação que aparecem no topo do site.');
     p.append(
       el('div', { class: 'box' },
-        field(d, 'photo', 'Sua foto', 'image'),
+        f('photo', 'Sua foto', 'image'),
+        f('photoAlt', 'Descrição da foto (para leitores de tela)', 'text', { placeholder: 'Ex.: Kenji sorrindo, de terno azul-marinho', hint: 'Descreva a foto para quem não pode vê-la. Lei Brasileira de Inclusão (13.146/2015).' }),
         el('div', { class: 'grid2' },
-          field(d, 'name', 'Nome', 'text', { placeholder: 'Prof. Seu Nome' }),
-          field(d, 'title', 'Título / profissão', 'text', { placeholder: 'Professor · Mentor · Desenvolvedor' })),
-        field(d, 'tagline', 'Frase de destaque', 'textarea'),
-        field(d, 'bio', 'Sobre mim', 'textarea'),
-        el('div', { class: 'grid2' },
-          field(d, 'location', 'Cidade / Estado', 'text', { placeholder: 'São Paulo - SP' }),
-          field(d, 'cnpj', 'CNPJ (MEI)', 'text', { hint: 'Aparece no rodapé. Deixe vazio para ocultar.' }))
+          f('name', 'Nome', 'text', { placeholder: 'Prof. Seu Nome' }),
+          f('title', 'Título / profissão', 'text', { placeholder: 'Professor · Mentor · Desenvolvedor' })),
+        f('tagline', 'Frase de destaque', 'textarea'),
+        f('bio', 'Sobre mim', 'textarea'),
+        f('location', 'Cidade / Estado', 'text', { placeholder: 'São Paulo - SP' })
       ),
       el('div', { class: 'box' },
         el('label', { class: 'f' }, el('span', {}, 'Áreas de atuação (uma por linha)'),
@@ -311,13 +334,13 @@
           })())
       ),
       el('div', { class: 'box' },
-        el('span', { class: 'muted', style: 'font-size:.82rem' }, 'Números de destaque (ex.: “+10” / “anos ensinando”)'),
-        el('div', { style: 'height:10px' }),
+        el('h3', { class: 'kicker' }, 'Números de destaque'),
+        el('p', { class: 'notice-box' }, 'Use só números que você consegue provar (certificados, contratos, listas de presença). O número só aparece no site se a fonte estiver preenchida.'),
         ...data.stats.map((s, i) =>
-          el('div', { style: 'display:grid;grid-template-columns:110px 1fr 32px;gap:8px;align-items:start' },
-            field(s, 'value', 'Número'), field(s, 'label', 'Descrição'),
-            el('button', { class: 'icon-btn danger', style: 'margin-top:26px', title: 'Remover', onclick: () => { data.stats.splice(i, 1); markDirty(); renderPanel(); } }, html(icon('x'))))),
-        el('button', { class: 'btn btn-sm add-btn', onclick: () => { data.stats.push({ value: '', label: '' }); markDirty(); renderPanel(); } }, '+ Adicionar número')
+          el('div', { style: 'display:grid;grid-template-columns:110px 1fr 1fr 32px;gap:8px;align-items:start' },
+            field(s, 'value', 'Número'), field(s, 'label', 'Descrição'), field(s, 'source', 'Fonte / comprovação', 'text', { placeholder: 'Ex.: certificados emitidos 2019–2025' }),
+            el('button', { type: 'button', class: 'icon-btn danger', style: 'margin-top:26px', 'aria-label': 'Remover número', title: 'Remover', onclick: () => { data.stats.splice(i, 1); markDirty(); renderPanel(); } }, html(icon('x'))))),
+        el('button', { type: 'button', class: 'btn btn-sm add-btn', onclick: () => { data.stats.push({ value: '', label: '', source: '' }); markDirty(); renderPanel(); } }, '+ Adicionar número')
       )
     );
   }
@@ -361,10 +384,10 @@
   function listControls(list, i) {
     const move = (to) => { const [x] = list.splice(i, 1); list.splice(to, 0, x); markDirty(); renderPanel(); };
     return [
-      el('button', { class: 'icon-btn', title: 'Subir', disabled: i === 0, onclick: (e) => { e.stopPropagation(); move(i - 1); } }, '↑'),
-      el('button', { class: 'icon-btn', title: 'Descer', disabled: i === list.length - 1, onclick: (e) => { e.stopPropagation(); move(i + 1); } }, '↓'),
+      el('button', { type: 'button', class: 'icon-btn', title: 'Subir', 'aria-label': 'Mover para cima', disabled: i === 0, onclick: () => move(i - 1) }, '↑'),
+      el('button', { type: 'button', class: 'icon-btn', title: 'Descer', 'aria-label': 'Mover para baixo', disabled: i === list.length - 1, onclick: () => move(i + 1) }, '↓'),
       el('button', {
-        class: 'icon-btn danger', title: 'Excluir',
+        type: 'button', class: 'icon-btn danger', title: 'Excluir', 'aria-label': 'Excluir item',
         onclick: (e) => { e.stopPropagation(); if (confirm('Excluir este item?')) { list.splice(i, 1); markDirty(); renderPanel(); } },
       }, html(icon('x'))),
     ];
@@ -373,8 +396,13 @@
   function itemCard(titleText, extra, body, open) {
     const title = el('strong', {}, titleText || '(sem título)');
     const card = el('div', { class: 'item' + (open ? ' open' : '') });
-    const headEl = el('div', { class: 'item-head', onclick: () => card.classList.toggle('open') }, title, ...extra);
-    card.append(headEl, el('div', { class: 'item-body' }, ...body));
+    const bodyId = 'item-' + Math.random().toString(36).slice(2, 9);
+    const hasTag = extra[0] && extra[0].classList && extra[0].classList.contains('price-tag');
+    const tag = hasTag ? extra[0] : null;
+    const controls = hasTag ? extra.slice(1) : extra;
+    const toggle = el('button', { type: 'button', class: 'item-toggle', 'aria-expanded': String(!!open), 'aria-controls': bodyId }, title, tag);
+    toggle.addEventListener('click', () => toggle.setAttribute('aria-expanded', String(card.classList.toggle('open'))));
+    card.append(el('div', { class: 'item-head' }, toggle, ...controls), el('div', { class: 'item-body', id: bodyId }, ...body));
     return { card, title };
   }
 
@@ -394,7 +422,7 @@
           field(it, 'title', 'Título', 'text', { onChange: (v) => (title.textContent = v || '(sem título)') }),
           field(it, 'icon', 'Ícone (usado quando não há imagem)', 'select', { options: ICON_CHOICES })),
         field(it, 'description', 'Descrição', 'textarea'),
-        field(it, 'image', 'Imagem (opcional)', 'image'),
+        ...imageGroup(it, 'Imagem (opcional)'),
         el('div', { class: 'grid2' },
           field(it, 'price', 'Preço (R$)', 'number', { placeholder: '0 = sob consulta', onChange: (v) => (priceTag.textContent = v > 0 ? brl(v) : 'sob consulta') }),
           field(it, 'priceNote', 'Observação do preço', 'text', { placeholder: 'por hora, por sessão, a partir de…' })),
@@ -410,12 +438,77 @@
     });
 
     p.append(el('button', {
-      class: 'btn add-btn',
+      type: 'button', class: 'btn add-btn',
       onclick: () => {
-        list.push({ title: isProd ? 'Novo produto' : 'Novo serviço', icon: isProd ? 'bag' : 'spark', description: '', image: '', price: 0, priceNote: '', buyable: true, pixKeyType: '', pixKey: '', _new: true });
+        list.push({ title: isProd ? 'Novo produto' : 'Novo serviço', icon: isProd ? 'bag' : 'spark', description: '', image: '', imageAlt: '', imageCredit: '', price: 0, priceNote: '', buyable: true, pixKeyType: '', pixKey: '', _new: true });
         markDirty(); renderPanel();
       },
     }, isProd ? '+ Adicionar produto' : '+ Adicionar serviço'));
+  }
+
+  function imageGroup(it, label) {
+    return [
+      field(it, 'image', label, 'image'),
+      el('div', { class: 'grid2' },
+        field(it, 'imageAlt', 'Descrição da imagem (texto alternativo)', 'text', { hint: 'O que aparece na imagem, para leitores de tela.' }),
+        field(it, 'imageCredit', 'Crédito / fonte da imagem', 'text', { placeholder: 'Ex.: Foto: Fulano / Unsplash', hint: 'Use só imagens suas, licenciadas ou autorizadas.' })),
+    ];
+  }
+
+  function panelTestimonials(p) {
+    const list = data.testimonials;
+    head(p, 'Depoimentos', 'Só depoimentos reais, com autorização do autor. Sem a confirmação, o depoimento não aparece no site.');
+    p.append(el('p', { class: 'notice-box' }, 'Guarde a autorização por escrito (print do WhatsApp ou e-mail em que a pessoa autoriza publicar o texto com o nome dela). Depoimento inventado é publicidade enganosa (CDC art. 37).'));
+    list.forEach((it, i) => {
+      const { card, title } = itemCard(it.name, listControls(list, i), [
+        el('div', { class: 'grid2' },
+          field(it, 'name', 'Nome do autor', 'text', { onChange: (v) => (title.textContent = v || '(sem título)') }),
+          field(it, 'role', 'Quem é (ex.: aluno de robótica)', 'text'),
+          field(it, 'date', 'Data (AAAA-MM)', 'text', { placeholder: '2025-05' })),
+        field(it, 'text', 'Depoimento (como a pessoa escreveu)', 'textarea'),
+        field(it, 'authorized', 'Confirmo que o depoimento é real e que o autor autorizou por escrito a publicação com o nome dele', 'checkbox'),
+      ], it._new);
+      delete it._new;
+      p.append(card);
+    });
+    p.append(el('button', {
+      type: 'button', class: 'btn add-btn',
+      onclick: () => { list.unshift({ name: '', role: '', text: '', date: new Date().toISOString().slice(0, 7), authorized: false, _new: true }); markDirty(); renderPanel(); },
+    }, '+ Adicionar depoimento'));
+  }
+
+  function panelEmpresa(p) {
+    const co = bound('company', data.company);
+    const pol = bound('policies', data.policies);
+    const an = bound('analytics', data.analytics);
+    head(p, 'Empresa & Legal', 'Dados obrigatórios para vender pela internet (Decreto 7.962/2013) e prazos das suas políticas.');
+    if (!Compliance.isValidCNPJ(data.company.cnpj)) {
+      p.append(el('p', { class: 'notice-box' }, 'Preencha o nome empresarial, o CNPJ e o endereço: a lei exige que eles apareçam em sites que vendem produtos ou serviços.'));
+    }
+    p.append(
+      el('div', { class: 'box' },
+        el('div', { class: 'grid2' },
+          co('legalName', 'Nome empresarial (como no cartão CNPJ)', 'text', { placeholder: 'Ex.: KENJI SUZUKI 12345678000195' }),
+          co('tradeName', 'Nome fantasia (opcional)', 'text'),
+          co('cnpj', 'CNPJ', 'text', { placeholder: '00.000.000/0000-00', validate: (v) => (v && !Compliance.isValidCNPJ(v) ? 'CNPJ inválido: confira os números.' : '') })),
+        co('address', 'Endereço (aparece no rodapé e nas políticas)', 'text', { placeholder: 'Rua, número - bairro, cidade - UF, CEP', hint: 'Se for o endereço da sua casa, você pode usar um endereço comercial ou caixa postal.' })
+      ),
+      el('div', { class: 'box' },
+        el('h3', { class: 'kicker' }, 'Política de Reembolso'),
+        el('div', { class: 'grid2' },
+          pol('cancelHours', 'Antecedência mínima para cancelar sem custo (horas)', 'number'),
+          pol('refundDays', 'Prazo para devolver o dinheiro (dias)', 'number'),
+          pol('updatedAt', 'Data da última atualização das políticas', 'date', { hint: 'Atualize sempre que mudar algum prazo.' }))
+      ),
+      el('div', { class: 'box' },
+        el('h3', { class: 'kicker' }, 'Google Analytics (opcional)'),
+        an('gaId', 'ID de medição do Google Analytics 4', 'text', {
+          placeholder: 'G-XXXXXXXXXX',
+          validate: (v) => (v && !Compliance.isValidGaId(v) ? 'ID inválido. Use o formato G-XXXXXXXXXX.' : ''),
+          hint: 'Deixe vazio para não usar. Se preencher, o site passa a mostrar o aviso de cookies e só mede visitas de quem aceitar.',
+        })
+      )
+    );
   }
 
   function panelPortfolio(p) {
@@ -429,13 +522,13 @@
           field(it, 'date', 'Ano / data', 'text', { placeholder: '2025' }),
           field(it, 'link', 'Link (opcional)', 'url', { placeholder: 'https://…' })),
         field(it, 'description', 'Descrição', 'textarea'),
-        field(it, 'image', 'Imagem', 'image'),
+        ...imageGroup(it, 'Imagem'),
       ], it._new);
       delete it._new;
       p.append(card);
     });
     p.append(el('button', {
-      class: 'btn add-btn',
+      type: 'button', class: 'btn add-btn',
       onclick: () => { list.unshift({ title: 'Novo trabalho', category: '', description: '', image: '', link: '', date: String(new Date().getFullYear()), _new: true }); markDirty(); renderPanel(); },
     }, '+ Adicionar ao portfólio'));
   }
