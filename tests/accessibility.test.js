@@ -43,7 +43,7 @@ test('Textos alternativos: sem alt definido, usa um texto descritivo padrão (nu
   delete d.profile.photoAlt;
   d.products[0].imageAlt = '';
   const { document } = await loadPage('index.html', { data: d });
-  assert.match(document.querySelector('.portrait img').alt, /Prof\. Kenji Suzuki/);
+  assert.equal(document.querySelector('.portrait img').alt, `Foto de ${d.profile.name}`);
   assert.equal(document.querySelector('img[src="assets/uploads/x.jpg"]').alt, 'Curso X');
 });
 
