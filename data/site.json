@@ -1,25 +1,35 @@
 {
   "profile": {
-    "name": "Prof. Kenji Suzuki",
-    "title": "Professor · Mentor · Desenvolvedor",
-    "tagline": "Transformo tecnologia em resultado: Inteligência Artificial, Eletrônica, Robótica, Automação Industrial e Gestão de Negócios.",
-    "bio": "Sou professor e consultor com atuação em Inteligência Artificial, Eletrônica, Robótica, Automação Industrial e Gestão de Empreendimentos. Ajudo pessoas e empresas a aprender, inovar e colocar projetos em prática — com mentorias, treinamentos, aulas particulares, palestras e desenvolvimento de aplicações sob medida.",
+    "name": "Kenji Marcos Suzuki",
+    "title": "Mentor · Desenvolvedor",
+    "tagline": "Transformo tecnologia em resultado: Inteligência Artificial, Gestão de Negócios, Automação Industrial, Eletrônica, Robótica, ",
+    "bio": "Sou mentor e consultor com atuação em Inteligência Artificial e Gestão de Negócios pelo SEBRAE, Ciências de Dados, Indústria 4.0, Eletrônica e Robótica desde 2021. Ajudo pessoas e empresas a aprender, inovar e colocar projetos em prática — com mentorias, treinamentos, aulas particulares, palestras e desenvolvimento de aplicações personalizadas.",
     "photo": "assets/uploads/foto-perfil.webp",
-    "location": "Brasil",
-    "cnpj": ""
+    "location": "Brasil / São Paulo",
+    "cnpj": "63.151.264/0001-66"
   },
   "areas": [
     "Inteligência Artificial",
-    "Eletrônica",
-    "Robótica",
-    "Automação Industrial",
     "Gestão de Negócios",
-    "Empreendedorismo"
+    "Empreendedorismo",
+    "Ciências de Dados",
+    "Indústria 4.0",
+    "Eletrônica",
+    "Robótica"
   ],
-  "stats": [],
+  "stats": [
+    {
+      "value": "200",
+      "label": "Alunos Faixas Pretas em Inteligência Artifical"
+    },
+    {
+      "value": "500",
+      "label": "Alunos em Indústria 4.0 / Eletrônica / Robótica"
+    }
+  ],
   "contact": {
     "whatsapp": "5517981596797",
-    "whatsappMessage": "Olá, professor! Vim pelo seu site e gostaria de mais informações.",
+    "whatsappMessage": "Olá, Kenji! Vim pelo seu site e gostaria de mais informações.",
     "email": "kenji.suzuki1@hotmail.com",
     "instagram": "https://instagram.com/kenji_ms",
     "linkedin": "",
@@ -29,8 +39,8 @@
   "pix": {
     "keyType": "aleatoria",
     "key": "63f1fbe8-a4a8-4df5-84c4-d9cafe84398b",
-    "receiverName": "Kenji Suzuki",
-    "city": ""
+    "receiverName": "Kenji Marcos Suzuki",
+    "city": "Barretos"
   },
   "services": [
     {
