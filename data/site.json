@@ -1,0 +1,94 @@
+{
+  "profile": {
+    "name": "Prof. Kenji Suzuki",
+    "title": "Professor · Mentor · Desenvolvedor",
+    "tagline": "Transformo tecnologia em resultado: Inteligência Artificial, Eletrônica, Robótica, Automação Industrial e Gestão de Negócios.",
+    "bio": "Sou professor e consultor com atuação em Inteligência Artificial, Eletrônica, Robótica, Automação Industrial e Gestão de Empreendimentos. Ajudo pessoas e empresas a aprender, inovar e colocar projetos em prática — com mentorias, treinamentos, aulas particulares, palestras e desenvolvimento de aplicações sob medida.",
+    "photo": "",
+    "location": "Brasil",
+    "cnpj": ""
+  },
+  "areas": [
+    "Inteligência Artificial",
+    "Eletrônica",
+    "Robótica",
+    "Automação Industrial",
+    "Gestão de Negócios",
+    "Empreendedorismo"
+  ],
+  "stats": [],
+  "contact": {
+    "whatsapp": "5517981596797",
+    "whatsappMessage": "Olá, professor! Vim pelo seu site e gostaria de mais informações.",
+    "email": "kenji.suzuki1@hotmail.com",
+    "instagram": "https://instagram.com/kenji_ms",
+    "linkedin": "",
+    "youtube": "",
+    "github": "https://github.com/KenjiSuzuki98"
+  },
+  "pix": {
+    "keyType": "aleatoria",
+    "key": "63f1fbe8-a4a8-4df5-84c4-d9cafe84398b",
+    "receiverName": "Kenji Suzuki",
+    "city": ""
+  },
+  "services": [
+    {
+      "title": "Mentoria Individual",
+      "icon": "mentor",
+      "description": "Acompanhamento personalizado para carreira em tecnologia, projetos de IA/robótica ou para tirar seu negócio do papel.",
+      "image": "",
+      "price": 0,
+      "priceNote": "sob consulta",
+      "buyable": true,
+      "pixKeyType": "",
+      "pixKey": ""
+    },
+    {
+      "title": "Treinamentos para Empresas",
+      "icon": "training",
+      "description": "Capacitação in company em IA aplicada, automação industrial, eletrônica e gestão. Conteúdo adaptado à sua equipe.",
+      "image": "",
+      "price": 0,
+      "priceNote": "sob consulta",
+      "buyable": false,
+      "pixKeyType": "",
+      "pixKey": ""
+    },
+    {
+      "title": "Desenvolvimento de Aplicações",
+      "icon": "code",
+      "description": "Sistemas, automações e soluções com Inteligência Artificial feitos sob medida para o seu problema.",
+      "image": "",
+      "price": 0,
+      "priceNote": "orçamento sob medida",
+      "buyable": false,
+      "pixKeyType": "",
+      "pixKey": ""
+    },
+    {
+      "title": "Aula Particular",
+      "icon": "class",
+      "description": "Aulas online ou presenciais de eletrônica, programação, robótica, IA e automação — do básico ao avançado.",
+      "image": "",
+      "price": 0,
+      "priceNote": "sob consulta",
+      "buyable": true,
+      "pixKeyType": "",
+      "pixKey": ""
+    },
+    {
+      "title": "Palestras",
+      "icon": "mic",
+      "description": "Palestras sobre IA, inovação, indústria 4.0 e empreendedorismo para eventos, escolas e empresas.",
+      "image": "",
+      "price": 0,
+      "priceNote": "sob consulta",
+      "buyable": false,
+      "pixKeyType": "",
+      "pixKey": ""
+    }
+  ],
+  "products": [],
+  "portfolio": []
+}

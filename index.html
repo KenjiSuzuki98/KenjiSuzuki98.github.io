@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Professor · Mentoria, Treinamentos e Tecnologia</title>
+  <meta name="description" content="Inteligência Artificial, Eletrônica, Robótica, Automação Industrial e Gestão de Negócios: mentorias, treinamentos, aulas, palestras e desenvolvimento de aplicações.">
+  <meta name="theme-color" content="#0a0f1f">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="nav" id="top">
+    <div class="wrap nav-inner">
+      <a class="brand" href="#inicio"><span class="brand-mark"></span><span id="brandName"></span></a>
+      <button class="menu-btn" id="menuBtn" aria-label="Abrir menu"></button>
+      <nav class="menu" id="menu">
+        <a href="#sobre">Sobre</a>
+        <a href="#servicos">Serviços</a>
+        <a href="#loja" data-section="loja">Loja</a>
+        <a href="#portfolio" data-section="portfolio">Portfólio</a>
+        <a href="#contato" class="btn btn-sm btn-primary">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app"><div class="loading">Carregando…</div></main>
+
+  <footer class="footer" id="footer"></footer>
+
+  <a class="wa-float" id="waFloat" target="_blank" rel="noopener" aria-label="Falar no WhatsApp" hidden></a>
+
+  <div class="modal" id="pixModal" hidden>
+    <div class="modal-backdrop" data-close></div>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pixTitle">
+      <button class="modal-close" data-close aria-label="Fechar"></button>
+      <div id="pixBody"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/pix.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
