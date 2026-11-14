@@ -194,12 +194,45 @@ window.Site = (() => {
     clearGaCookies();
   }
 
+  // ---------- Aula / evento gratuito ----------
+  // O horário é cadastrado no fuso de Brasília (sem horário de verão desde 2019).
+  const TZ = 'America/Sao_Paulo';
+  const GROUP_RE = /^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]+/;
+
+  function parseStart(s) {
+    const m = String(s || '').match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    return m ? new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:00-03:00`) : null;
+  }
+
+  // Devolve o evento pronto para exibir, ou null se estiver desligado, incompleto ou já tiver acabado.
+  function event(site, now = new Date()) {
+    const e = site && site.event;
+    if (!e || !e.enabled || !e.title) return null;
+    const start = parseStart(e.start);
+    if (!start) return null;
+    const end = new Date(start.getTime() + (Number(e.durationMinutes) || 90) * 60000);
+    if (now >= end) return null;
+    const hm = start.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: TZ }).split(':');
+    const group = String(e.whatsappGroup || '').trim();
+    return {
+      ...e,
+      topics: (e.topics || []).filter(Boolean),
+      start, end,
+      weekday: start.toLocaleDateString('pt-BR', { weekday: 'long', timeZone: TZ }),
+      date: start.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', timeZone: TZ }),
+      time: hm[1] === '00' ? `${hm[0]}h` : `${hm[0]}h${hm[1]}`,
+      group: GROUP_RE.test(group) ? group : '',
+    };
+  }
+
   function init(site) {
     renderFooter(site);
     initConsent(site);
+    const ev = event(site);
+    document.querySelectorAll('[data-event-link]').forEach((a) => (a.hidden = !ev));
   }
 
   initMenu();
 
-  return { $, esc, brl, digits, waLink, safeUrl, ext, formatPhone, formatDate, load, toast, values, init, clearLocalData };
+  return { $, esc, brl, digits, waLink, safeUrl, ext, formatPhone, formatDate, load, toast, values, init, clearLocalData, event };
 })();

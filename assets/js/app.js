@@ -78,6 +78,32 @@
       </figure>`;
   }
 
+  // Banner da aula gratuita: o cartão inteiro leva para o cadastro (aula.html).
+  function eventBanner() {
+    const ev = Site.event(site);
+    if (!ev) return '';
+    const img = safeUrl(ev.image);
+    return `
+      <section class="event-strip" id="aula" aria-labelledby="aulaTitle">
+        <div class="wrap">
+          <div class="event-banner reveal">
+            <div class="event-text">
+              <span class="eyebrow eyebrow-gold"><span class="dot"></span>${esc(ev.kicker || 'Aula gratuita')}</span>
+              <h2 id="aulaTitle">${esc(ev.title)}</h2>
+              <ul class="event-meta">
+                <li>${icon('class')}<span>${esc(ev.weekday)}, <strong>${esc(ev.date)}</strong></span></li>
+                <li>${icon('spark')}<span>às <strong>${esc(ev.time)}</strong> (Brasília)</span></li>
+                <li>${icon('whatsapp')}<span>Online e gratuita</span></li>
+              </ul>
+              ${ev.topics.length ? `<ul class="event-topics">${ev.topics.map((t) => `<li>${icon('check')}${esc(t)}</li>`).join('')}</ul>` : ''}
+              <a class="btn btn-gold event-cta" href="aula.html">Quero minha vaga gratuita ${icon('arrow')}</a>
+            </div>
+            ${img ? `<figure class="event-media"><img src="${esc(img)}" alt="${esc(ev.imageAlt || '')}" width="960" height="720"></figure>` : ''}
+          </div>
+        </div>
+      </section>`;
+  }
+
   function render() {
     const p = site.profile || {};
     const c = site.contact || {};
@@ -118,6 +144,8 @@
           </div>
         </div>
       </section>
+
+      ${eventBanner()}
 
       <section class="block alt" id="sobre">
         <div class="wrap about-grid">

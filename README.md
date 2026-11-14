@@ -22,6 +22,18 @@ GitHub → **Settings → Developer settings → Personal access tokens → Fine
 
 O token fica salvo apenas no navegador onde você fez login. Para sair, use o botão **Sair** do painel.
 
+## Aula gratuita (banner + inscrição)
+
+- A página inicial mostra um banner da aula, que leva para `aula.html` (inscrição).
+- A inscrição pede só **nome, celular e e-mail**, com autorização de contato e uma caixa
+  **opcional** para receber ofertas. Depois mostra o link e o QR Code do grupo do WhatsApp.
+- Tudo é editado no painel, aba **Aula / Evento**. O banner some sozinho quando a aula termina.
+- As inscrições vão para uma **planilha Google sua**. Para ativar, siga o passo a passo no
+  topo de `planilha/inscricoes.gs` e cole a URL `/exec` no campo
+  **Endereço da planilha** do painel. Sem essa URL, a página não coleta dados e mostra
+  direto o link do grupo.
+- Depois de ativar, faça uma inscrição de teste e confira se a linha aparece na planilha.
+
 ## Pagamentos via Pix
 
 - Na aba **Pix** do painel, configure a chave padrão, o nome do recebedor e a cidade.
@@ -63,7 +75,7 @@ npm install
 npm test
 ```
 
-São 63 testes cobrindo: páginas legais, cookies e Google Analytics, coleta mínima,
+São 79 testes cobrindo: inscrição da aula gratuita, páginas legais, cookies e Google Analytics, coleta mínima,
 scripts de terceiros, auditoria de acessibilidade (axe-core), contraste WCAG AA,
 navegação por teclado, textos alternativos, botões claros, depoimentos, promessas
 e dados da empresa. Eles também rodam no GitHub a cada alteração (aba **Actions**).

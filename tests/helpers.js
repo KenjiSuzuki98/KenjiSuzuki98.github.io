@@ -10,7 +10,14 @@ const exists = (p) => fs.existsSync(path.join(ROOT, p));
 const siteData = () => JSON.parse(read('data/site.json'));
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
-const PUBLIC_PAGES = ['index.html', 'privacidade.html', 'termos.html', 'reembolso.html'];
+const PUBLIC_PAGES = ['index.html', 'aula.html', 'privacidade.html', 'termos.html', 'reembolso.html'];
+
+// Aula sempre no futuro, para os testes não dependerem da data em que rodam (horário de Brasília).
+const ENDPOINT = 'https://script.google.com/macros/s/AKfycbTESTE_123-abc/exec';
+function futureStart(days = 3) {
+  const d = new Date(Date.now() + days * 86400000 - 3 * 3600000);
+  return d.toISOString().slice(0, 11) + '20:30';
+}
 const ALL_PAGES = [...PUBLIC_PAGES, 'admin.html'];
 
 // Site de exemplo com todos os campos preenchidos, para testar a renderização.
@@ -35,6 +42,7 @@ function fullData(overrides = {}) {
     { name: 'Maria Autorizada', role: 'Aluna', text: 'Aprendi muito.', date: '2025-05', authorized: true },
     { name: 'João Sem Autorização', role: 'Aluno', text: 'Não pode aparecer.', date: '2025-06', authorized: false },
   ];
+  d.event = { ...d.event, enabled: true, start: futureStart(), formEndpoint: ENDPOINT };
   return Object.assign(d, overrides);
 }
 
@@ -69,4 +77,4 @@ async function runAxe(w) {
 
 const key = (w, el, k, opts = {}) => el.dispatchEvent(new w.KeyboardEvent('keydown', { key: k, bubbles: true, cancelable: true, ...opts }));
 
-module.exports = { ROOT, read, exists, siteData, fullData, clone, loadPage, settle, runAxe, key, PUBLIC_PAGES, ALL_PAGES };
+module.exports = { ENDPOINT, futureStart, ROOT, read, exists, siteData, fullData, clone, loadPage, settle, runAxe, key, PUBLIC_PAGES, ALL_PAGES };

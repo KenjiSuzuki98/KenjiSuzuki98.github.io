@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 720" width="960" height="720" role="img" aria-label="Aula gratuita e online: IA no seu negócio, com Kenji Marcos Suzuki, terça 17 de novembro às 20h30">
+  <defs>
+    <radialGradient id="bg" cx="78%" cy="18%" r="85%">
+      <stop offset="0" stop-color="#1c2b70"/>
+      <stop offset="0.55" stop-color="#0e1530"/>
+      <stop offset="1" stop-color="#0a0f1f"/>
+    </radialGradient>
+    <linearGradient id="cyan" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#2dd4f0"/>
+      <stop offset="0.6" stop-color="#8fa2ff"/>
+      <stop offset="1" stop-color="#f5b544"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#f5b544"/>
+      <stop offset="1" stop-color="#ffd78a"/>
+    </linearGradient>
+    <pattern id="grid" width="48" height="48" patternUnits="userSpaceOnUse">
+      <path d="M48 0H0V48" fill="none" stroke="#94aaff" stroke-opacity="0.09" stroke-width="1"/>
+    </pattern>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="40"/></filter>
+    <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="4"/></filter>
+  </defs>
+
+  <rect width="960" height="720" fill="url(#bg)"/>
+  <rect width="960" height="720" fill="url(#grid)"/>
+  <circle cx="780" cy="220" r="190" fill="#2dd4f0" opacity="0.16" filter="url(#blur)"/>
+  <circle cx="160" cy="620" r="170" fill="#f5b544" opacity="0.10" filter="url(#blur)"/>
+
+  <!-- Rede neural -->
+  <g stroke="#2dd4f0" stroke-opacity="0.35" stroke-width="2" fill="none">
+    <path d="M660 120L770 80M660 120L770 190M660 120L770 300M660 240L770 80M660 240L770 190M660 240L770 300M660 240L770 380M660 360L770 190M660 360L770 300M660 360L770 380"/>
+    <path d="M770 80L885 140M770 80L885 250M770 190L885 140M770 190L885 250M770 190L885 340M770 300L885 140M770 300L885 250M770 300L885 340M770 380L885 250M770 380L885 340"/>
+  </g>
+  <g fill="#2dd4f0">
+    <g filter="url(#glow)" opacity="0.8"><circle cx="770" cy="190" r="10"/><circle cx="885" cy="250" r="10" fill="#f5b544"/></g>
+    <circle cx="660" cy="120" r="8"/><circle cx="660" cy="240" r="8"/><circle cx="660" cy="360" r="8"/>
+    <circle cx="770" cy="80" r="8"/><circle cx="770" cy="190" r="9"/><circle cx="770" cy="300" r="8"/><circle cx="770" cy="380" r="8"/>
+    <circle cx="885" cy="140" r="8"/><circle cx="885" cy="250" r="9" fill="#f5b544"/><circle cx="885" cy="340" r="8"/>
+  </g>
+
+  <!-- Selos -->
+  <rect x="64" y="64" width="262" height="50" rx="25" fill="url(#gold)"/>
+  <text x="195" y="97" text-anchor="middle" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="22" font-weight="700" letter-spacing="3" fill="#2a1a00">AULA GRATUITA</text>
+  <rect x="340" y="64" width="268" height="50" rx="25" fill="#25d366" fill-opacity="0.12" stroke="#25d366" stroke-width="2"/>
+  <circle cx="368" cy="89" r="7" fill="#25d366"/>
+  <text x="488" y="96" text-anchor="middle" textLength="200" lengthAdjust="spacingAndGlyphs" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="19" font-weight="700" fill="#7ee2a8">AO VIVO · ONLINE</text>
+
+  <!-- Título -->
+  <text x="56" y="330" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="230" font-weight="700" letter-spacing="-6" fill="url(#cyan)">IA</text>
+  <text x="64" y="410" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="58" font-weight="700" fill="#e9edf9">no seu negócio</text>
+  <text x="64" y="468" font-family="Inter, Segoe UI, Arial, sans-serif" font-size="26" font-weight="500" fill="#9ba7c9">com <tspan fill="#e9edf9" font-weight="700">Kenji Marcos Suzuki</tspan></text>
+
+  <!-- Tópicos -->
+  <g font-family="Inter, Segoe UI, Arial, sans-serif" font-size="22" font-weight="600" fill="#c9d2ee">
+    <circle cx="74" cy="563" r="6" fill="#2dd4f0"/><text x="92" y="571">Ferramentas de IA</text>
+    <circle cx="74" cy="603" r="6" fill="#2dd4f0"/><text x="92" y="611">Apps personalizados</text>
+    <circle cx="334" cy="563" r="6" fill="#f5b544"/><text x="352" y="571">Processos</text>
+    <circle cx="334" cy="603" r="6" fill="#f5b544"/><text x="352" y="611">Equipes</text>
+  </g>
+
+  <!-- Calendário -->
+  <g transform="translate(640 432)">
+    <rect width="256" height="232" rx="28" fill="#121a36" stroke="#94aaff" stroke-opacity="0.3" stroke-width="2"/>
+    <path d="M28 0H228A28 28 0 0 1 256 28V62H0V28A28 28 0 0 1 28 0Z" fill="url(#gold)"/>
+    <text x="128" y="42" text-anchor="middle" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="24" font-weight="700" letter-spacing="3" fill="#2a1a00">TER · NOV</text>
+    <text x="128" y="164" text-anchor="middle" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="104" font-weight="700" fill="#e9edf9">17</text>
+    <text x="128" y="208" text-anchor="middle" font-family="Space Grotesk, Segoe UI, Arial, sans-serif" font-size="32" font-weight="700" fill="#2dd4f0">às 20h30</text>
+  </g>
+</svg>

@@ -159,6 +159,7 @@
   // ---------- Editor ----------
   const TABS = [
     ['perfil', 'Perfil', 'mentor'],
+    ['evento', 'Aula / Evento', 'class'],
     ['contato', 'Contato', 'whatsapp'],
     ['pix', 'Pix', 'pix'],
     ['services', 'Serviços', 'training'],
@@ -174,6 +175,8 @@
     data.profile ||= {}; data.contact ||= {}; data.pix ||= {};
     data.services ||= []; data.products ||= []; data.portfolio ||= []; data.areas ||= []; data.stats ||= [];
     data.company ||= {}; data.policies ||= {}; data.analytics ||= {}; data.testimonials ||= [];
+    data.event ||= { enabled: false, kicker: 'Aula gratuita e online', title: '', subtitle: '', start: '', durationMinutes: 90, topics: [], host: '', image: '', imageAlt: '', whatsappGroup: '', formEndpoint: '' };
+    data.event.topics ||= [];
     // Versões antigas guardavam o CNPJ no perfil.
     if (data.profile.cnpj && !data.company.cnpj) data.company.cnpj = data.profile.cnpj;
     delete data.profile.cnpj;
@@ -192,7 +195,7 @@
     const p = $('#panel');
     p.replaceChildren();
     ({
-      perfil: panelPerfil, contato: panelContato, pix: panelPix, empresa: panelEmpresa,
+      perfil: panelPerfil, evento: panelEvento, contato: panelContato, pix: panelPix, empresa: panelEmpresa,
       services: () => panelList('services'), products: () => panelList('products'),
       portfolio: panelPortfolio, testimonials: panelTestimonials,
     })[current](p);
@@ -341,6 +344,49 @@
             field(s, 'value', 'Número'), field(s, 'label', 'Descrição'), field(s, 'source', 'Fonte / comprovação', 'text', { placeholder: 'Ex.: certificados emitidos 2019–2025' }),
             el('button', { type: 'button', class: 'icon-btn danger', style: 'margin-top:26px', 'aria-label': 'Remover número', title: 'Remover', onclick: () => { data.stats.splice(i, 1); markDirty(); renderPanel(); } }, html(icon('x'))))),
         el('button', { type: 'button', class: 'btn btn-sm add-btn', onclick: () => { data.stats.push({ value: '', label: '', source: '' }); markDirty(); renderPanel(); } }, '+ Adicionar número')
+      )
+    );
+  }
+
+  function panelEvento(p) {
+    const ev = data.event;
+    const f = bound('event', ev);
+    head(p, 'Aula / Evento', 'Banner de aula gratuita na página inicial e página de inscrição (aula.html). O banner some sozinho quando a aula termina.');
+    p.append(
+      el('div', { class: 'box' },
+        f('enabled', 'Mostrar o banner e abrir as inscrições', 'checkbox'),
+        el('div', { class: 'grid2' },
+          f('kicker', 'Selo (texto pequeno acima do título)', 'text', { placeholder: 'Aula gratuita e online' }),
+          f('host', 'Quem apresenta', 'text', { placeholder: 'Seu nome · Sua empresa' })),
+        f('title', 'Título da aula', 'text'),
+        f('subtitle', 'Descrição', 'textarea'),
+        el('div', { class: 'grid2' },
+          f('start', 'Data e hora de início (horário de Brasília)', 'datetime-local'),
+          f('durationMinutes', 'Duração (minutos)', 'number', { hint: 'O banner sai do ar quando a aula termina.' })),
+        el('label', { class: 'f' }, el('span', {}, 'O que a pessoa vai ver (um tópico por linha)'),
+          (() => {
+            const t = el('textarea', {});
+            t.value = ev.topics.join('\n');
+            t.addEventListener('input', () => { ev.topics = t.value.split('\n').map((s) => s.trim()).filter(Boolean); markDirty(); });
+            return t;
+          })())
+      ),
+      el('div', { class: 'box' },
+        f('image', 'Imagem do banner (proporção 4:3, ex.: 1200×900)', 'image'),
+        f('imageAlt', 'Descrição da imagem (deixe vazio se ela só repete o texto do banner)', 'text')
+      ),
+      el('div', { class: 'box' },
+        el('h3', { class: 'kicker' }, 'Inscrições'),
+        f('whatsappGroup', 'Link do grupo do WhatsApp', 'url', {
+          placeholder: 'https://chat.whatsapp.com/…',
+          validate: (v) => (v && !/^https:\/\/chat\.whatsapp\.com\/[A-Za-z0-9]+/.test(v.trim()) ? 'O link precisa começar com https://chat.whatsapp.com/' : ''),
+          hint: 'Aparece com QR Code depois que a pessoa se inscreve.',
+        }),
+        f('formEndpoint', 'Endereço da planilha (Google Apps Script)', 'url', {
+          placeholder: 'https://script.google.com/macros/s/…/exec',
+          validate: (v) => (v && !/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(v.trim()) ? 'Endereço inválido: copie a "URL do app da Web", que termina em /exec.' : ''),
+          hint: 'Passo a passo no arquivo planilha/inscricoes.gs. Vazio = o site não coleta dados e mostra direto o link do grupo.',
+        })
       )
     );
   }

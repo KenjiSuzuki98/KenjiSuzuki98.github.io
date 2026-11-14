@@ -8,6 +8,25 @@
     "location": "Brasil / São Paulo",
     "photoAlt": "Foto de Kenji Marcos Suzuki sorrindo, de terno azul-marinho e camisa escura"
   },
+  "event": {
+    "enabled": true,
+    "kicker": "Aula gratuita e online",
+    "title": "Inteligência Artificial aplicada ao Negócio",
+    "subtitle": "Vou mostrar, na prática, as soluções de IA que eu desenvolvo e uso no dia a dia do meu negócio, e como você pode aprender, criar e usar a IA para melhorar a gestão da sua empresa.",
+    "start": "2026-11-17T20:30",
+    "durationMinutes": 90,
+    "topics": [
+      "Ferramentas de IA para o dia a dia",
+      "Soluções e aplicativos personalizados",
+      "Melhoria de processos",
+      "Treinamento de colaboradores"
+    ],
+    "host": "Kenji Marcos Suzuki · Mercado França e Filhos",
+    "image": "assets/uploads/aula-ia.svg",
+    "imageAlt": "",
+    "whatsappGroup": "https://chat.whatsapp.com/IT56JC7tO3NJTIhEoQNTlq",
+    "formEndpoint": "https://script.google.com/macros/s/AKfycbwyavcX51_AWwD6MtN-6ap3tRxQSJ77l4GNVA1mynGph1kw8dUczdv2wDS_4RAuVFaH/exec"
+  },
   "company": {
     "legalName": "",
     "tradeName": "",
@@ -123,7 +142,7 @@
   "policies": {
     "cancelHours": 24,
     "refundDays": 7,
-    "updatedAt": "2026-10-31"
+    "updatedAt": "2026-11-14"
   },
   "analytics": {
     "gaId": ""
