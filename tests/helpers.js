@@ -3,6 +3,11 @@
 const fs = require('fs');
 const path = require('path');
 const { JSDOM } = require('jsdom');
+const { after } = require('node:test');
+
+// Páginas com relógio (setInterval) manteriam o processo vivo: fecha todas no fim do arquivo.
+const abertas = [];
+after(() => { for (const w of abertas) { try { w.close(); } catch (e) { /* já fechada */ } } });
 
 const ROOT = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
@@ -10,7 +15,7 @@ const exists = (p) => fs.existsSync(path.join(ROOT, p));
 const siteData = () => JSON.parse(read('data/site.json'));
 const clone = (o) => JSON.parse(JSON.stringify(o));
 
-const PUBLIC_PAGES = ['index.html', 'aula.html', 'privacidade.html', 'termos.html', 'reembolso.html'];
+const PUBLIC_PAGES = ['index.html', 'aula.html', 'privacidade.html', 'termos.html', 'reembolso.html', 'turma.html', 'turma-termos.html'];
 
 // Aula sempre no futuro, para os testes não dependerem da data em que rodam (horário de Brasília).
 const ENDPOINT = 'https://script.google.com/macros/s/AKfycbTESTE_123-abc/exec';
@@ -18,7 +23,7 @@ function futureStart(days = 3) {
   const d = new Date(Date.now() + days * 86400000 - 3 * 3600000);
   return d.toISOString().slice(0, 11) + '20:30';
 }
-const ALL_PAGES = [...PUBLIC_PAGES, 'admin.html'];
+const ALL_PAGES = [...PUBLIC_PAGES, 'admin.html', 'turma-admin.html', 'certificado-turma1.html'];
 
 // Site de exemplo com todos os campos preenchidos, para testar a renderização.
 function fullData(overrides = {}) {
@@ -49,15 +54,17 @@ function fullData(overrides = {}) {
 const tick = (w) => new Promise((r) => w.setTimeout(r, 0));
 async function settle(w, n = 15) { for (let i = 0; i < n; i++) await tick(w); }
 
-async function loadPage(file = 'index.html', { data = siteData(), storage = {} } = {}) {
+async function loadPage(file = 'index.html', { data = siteData(), storage = {}, fetch = null, query = '', before = null } = {}) {
   const dom = new JSDOM(read(file), {
-    url: 'https://kenjisuzuki98.github.io/' + file,
+    url: 'https://kenjisuzuki98.github.io/' + file + query,
     runScripts: 'outside-only',
     pretendToBeVisual: true,
   });
   const w = dom.window;
+  abertas.push(w);
   for (const [k, v] of Object.entries(storage)) w.localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v));
-  w.fetch = async () => ({ ok: true, json: async () => clone(data) });
+  w.fetch = fetch ? fetch(w, data) : async () => ({ ok: true, json: async () => clone(data) });
+  if (before) before(w);
   w.scrollTo = () => {};
   w.HTMLElement.prototype.scrollIntoView = () => {};
   for (const s of w.document.querySelectorAll('script[src]')) {

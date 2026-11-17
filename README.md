@@ -34,6 +34,18 @@ O token fica salvo apenas no navegador onde você fez login. Para sair, use o bo
   direto o link do grupo.
 - Depois de ativar, faça uma inscrição de teste e confira se a linha aparece na planilha.
 
+## Turma 01 · Do Zero ao Faixa Preta com IA (inscrições pagas)
+
+- `turma.html`: página de vendas, montador do pedido (combo, noites avulsas, cadeira extra), formulário e Pix.
+- `turma-admin.html`: painel da live (botões A e B de 15 min, vagas por noite, marcar pago, fila, reembolso, CSV).
+- `turma-termos.html`: regras, reembolso, declaração do responsável, uso de imagem e privacidade (**rascunho: revisar**).
+- `certificado-turma1.html`: modelo de certificado para imprimir.
+- `mensagens/`: modelos de WhatsApp (lembretes, pós-live, confirmação, fila, reembolso, véspera...).
+- Servidor: Google Apps Script com `assets/js/turma-nucleo.js` (regras e preços) + `planilha/turma/Api.gs`.
+  Os dados pessoais ficam só na sua planilha Google, nunca neste repositório.
+
+Passo a passo: `docs/turma1-instalacao.md`. Ensaio antes de publicar: `docs/turma1-ensaio.md`.
+
 ## Pagamentos via Pix
 
 - Na aba **Pix** do painel, configure a chave padrão, o nome do recebedor e a cidade.
@@ -75,7 +87,7 @@ npm install
 npm test
 ```
 
-São 79 testes cobrindo: inscrição da aula gratuita, páginas legais, cookies e Google Analytics, coleta mínima,
+Os testes cobrem: Turma 01 (preços, vagas, botões da live, formulário, Pix, fila e painel), inscrição da aula gratuita, páginas legais, cookies e Google Analytics, coleta mínima,
 scripts de terceiros, auditoria de acessibilidade (axe-core), contraste WCAG AA,
 navegação por teclado, textos alternativos, botões claros, depoimentos, promessas
 e dados da empresa. Eles também rodam no GitHub a cada alteração (aba **Actions**).

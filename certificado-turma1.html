@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Certificado · Turma 01</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="cert-page">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <main id="conteudo" tabindex="-1">
+    <div class="cert-controles wrap">
+      <h1 class="sr-only">Modelo de certificado da Turma 01</h1>
+      <div class="field">
+        <label for="nomeAluno">Nome completo do aluno</label>
+        <input id="nomeAluno" autocomplete="off" maxlength="120" placeholder="Digite o nome e imprima">
+      </div>
+      <button type="button" class="btn btn-gold" id="btnImprimir">Imprimir ou salvar em PDF</button>
+      <p class="muted-text">Nada do que for digitado aqui é salvo ou enviado. Gere um certificado por aluno que participou das 3 noites.</p>
+    </div>
+
+    <article class="cert" aria-label="Certificado">
+      <p class="cert-kicker">Certificado de conclusão</p>
+      <p class="cert-titulo">Faixa Preta em IA</p>
+      <p class="cert-texto">Certifico que</p>
+      <p class="cert-nome" id="certNome">Nome do aluno</p>
+      <p class="cert-texto">concluiu o treinamento <strong>Do Zero ao Faixa Preta com Inteligência Artificial</strong> (Turma 01), realizado presencialmente nos dias 23, 24 e 25 de novembro de 2026, com carga horária de 6 horas, composto pelos módulos:</p>
+      <ol class="cert-modulos">
+        <li>O Primeiro Golpe: Dominando o ChatGPT</li>
+        <li>Dominando o Arsenal de IA</li>
+        <li>A Arte do Impacto: Criação Audiovisual com IA</li>
+      </ol>
+      <p class="cert-local">Barretos/SP, 25 de novembro de 2026.</p>
+      <div class="cert-assinatura">
+        <span class="cert-linha" aria-hidden="true"></span>
+        <p><strong>Kenji Marcos Suzuki</strong><br>Instrutor</p>
+      </div>
+    </article>
+  </main>
+  <script src="assets/js/certificado.js"></script>
+</body>
+</html>

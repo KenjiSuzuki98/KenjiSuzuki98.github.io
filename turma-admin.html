@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; connect-src 'self' https://script.google.com https://script.googleusercontent.com; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Painel · Turma 01</title>
+  <meta name="theme-color" content="#0a0f1f">
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="turma-admin">
+  <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+  <main id="conteudo" tabindex="-1" class="wrap ta-wrap">
+    <h1 class="ta-h1">Painel · Turma 01</h1>
+
+    <section id="login" class="aula-card ta-login" aria-labelledby="loginTitulo">
+      <h2 id="loginTitulo">Entrar</h2>
+      <form id="loginForm" novalidate>
+        <div class="field">
+          <label for="senha">Senha do painel</label>
+          <input id="senha" type="password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-gold btn-block" id="btnEntrar">Entrar no painel</button>
+        <p class="form-status" id="loginStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <div id="painel" hidden>
+      <p class="form-status ta-status" id="painelStatus" role="status" aria-live="polite"></p>
+
+      <section class="ta-botoes" aria-labelledby="botoesTitulo">
+        <h2 id="botoesTitulo" class="sr-only">Botões da live</h2>
+        <div class="ta-botao">
+          <h3>A · Promoção 50%</h3>
+          <p class="ta-timer"><span id="estadoPromoA">Desligada</span> <strong id="timerPromoA"></strong></p>
+          <button type="button" class="btn btn-gold btn-block" id="btnPromoA">Ativar promoção (15 min)</button>
+          <button type="button" class="btn btn-block" id="fimPromoA" hidden>Encerrar promoção agora</button>
+        </div>
+        <div class="ta-botao">
+          <h3>B · Cadeira extra + R$ 30</h3>
+          <p class="ta-timer"><span id="estadoPromoB">Desligada</span> <strong id="timerPromoB"></strong></p>
+          <button type="button" class="btn btn-gold btn-block" id="btnPromoB">Ativar cadeira extra (15 min)</button>
+          <button type="button" class="btn btn-block" id="fimPromoB" hidden>Encerrar cadeira extra agora</button>
+        </div>
+      </section>
+
+      <section class="ta-config" aria-labelledby="configTitulo">
+        <h2 id="configTitulo" class="ta-h2">Vagas por noite</h2>
+        <ul class="ta-contadores">
+          <li id="contNoite1"></li>
+          <li id="contNoite2"></li>
+          <li id="contNoite3"></li>
+        </ul>
+        <label class="check-field" for="chkVendas"><input type="checkbox" id="chkVendas"><span>Vendas abertas na página</span></label>
+        <label class="check-field" for="chkImagem"><input type="checkbox" id="chkImagem"><span>Autorização de imagem obrigatória para se inscrever</span></label>
+      </section>
+
+      <section aria-labelledby="listaTitulo">
+        <h2 id="listaTitulo" class="ta-h2">Inscrições</h2>
+        <div class="filters ta-abas" role="group" aria-label="Filtrar inscrições por status">
+          <button type="button" class="filter" id="abaPendente" data-aba="pendente">Aguardando Pix</button>
+          <button type="button" class="filter" id="abaPago" data-aba="pago">Pagos</button>
+          <button type="button" class="filter" id="abaFila" data-aba="fila">Fila de espera</button>
+          <button type="button" class="filter" id="abaExpirada" data-aba="expirada">Expiradas</button>
+          <button type="button" class="filter" id="abaCancelada" data-aba="cancelada">Liberadas</button>
+          <button type="button" class="filter" id="abaReembolsado" data-aba="reembolsado">Reembolsadas</button>
+          <button type="button" class="filter" id="abaTodas" data-aba="todas">Todas</button>
+        </div>
+        <div class="ta-lista" id="lista"></div>
+      </section>
+
+      <section class="ta-rodape" aria-label="Outras ações">
+        <button type="button" class="btn btn-sm" id="btnAtualizar">Atualizar lista</button>
+        <button type="button" class="btn btn-sm" id="btnExportar">Exportar planilha (CSV)</button>
+        <button type="button" class="btn btn-sm" id="btnLimparTestes">Apagar inscrições de teste</button>
+        <button type="button" class="btn btn-sm" id="btnSair">Sair do painel</button>
+      </section>
+    </div>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="assets/js/icons.js"></script>
+  <script src="assets/js/compliance.js"></script>
+  <script src="assets/js/common.js"></script>
+  <script src="assets/js/turma-nucleo.js"></script>
+  <script src="assets/js/turma-admin.js"></script>
+</body>
+</html>

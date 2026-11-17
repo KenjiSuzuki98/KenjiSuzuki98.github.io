@@ -461,3 +461,117 @@ figure.card-media { margin: 0; position: relative; }
 .jump-cta { display: none; margin-top: 18px; }
 .ico-down { transform: rotate(90deg); }
 @media (max-width: 900px) { .jump-cta { display: inline-flex; } }
+
+/* ---------- Turma 01 (turma.html) ---------- */
+.turma-hero { padding: 56px 0 40px; background: radial-gradient(circle at 80% 0%, rgba(245, 181, 68, 0.14), transparent 55%), var(--bg); }
+.turma-hero h1 { font-family: var(--display); font-size: clamp(2rem, 5vw, 3.2rem); line-height: 1.08; margin: 14px 0 12px; }
+.turma-lead { font-size: 1.08rem; color: var(--text-2); max-width: 760px; }
+.turma-meta { margin: 18px 0 22px; }
+.turma-h2 { font-family: var(--display); font-size: clamp(1.4rem, 3vw, 2rem); margin: 0 0 12px; }
+.turma-sub { color: var(--muted); margin: 0 0 18px; }
+.turma-avisos, .turma-inclui { margin: 0; padding-left: 1.2em; display: grid; gap: 10px; color: var(--text-2); max-width: 820px; }
+.turma-avisos strong, .turma-inclui strong { color: var(--text); }
+.turma-modulos { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.turma-modulos .kicker { color: var(--accent-2); font-size: 0.82rem; font-weight: 600; margin: 0 0 6px; }
+.turma-instrutor { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; }
+.turma-instrutor img { width: 120px; height: 120px; border-radius: 50%; object-fit: cover; border: 2px solid var(--accent-2); }
+.turma-instrutor > div { flex: 1 1 260px; }
+.turma-galeria { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.turma-foto { margin: 0; overflow: hidden; }
+.turma-foto img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.turma-foto figcaption { padding: 10px 14px; color: var(--muted); font-size: 0.85rem; }
+
+.promo-banner { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; justify-content: space-between; margin: 16px 0; padding: 14px 18px; border-radius: 14px; background: var(--accent-2); color: var(--gold-ink); max-width: 760px; }
+.promo-timer { font-family: var(--display); font-size: 1.3rem; font-variant-numeric: tabular-nums; }
+
+.turma-inscricao { max-width: 760px; }
+.montador { display: grid; gap: 16px; }
+.recomendado { margin: 0; color: var(--text); font-weight: 600; }
+.tag { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; background: var(--accent-2); color: var(--gold-ink); vertical-align: middle; }
+.opcoes { border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; margin: 0; display: grid; gap: 10px; background: var(--card); }
+.opcoes legend { padding: 0 6px; color: var(--muted); font-size: 0.85rem; }
+.opcao { display: flex; gap: 12px; align-items: center; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--line); background: var(--card-2); cursor: pointer; }
+.opcao input { width: 20px; height: 20px; flex: none; accent-color: var(--accent-2); }
+.opcao-destaque { border-color: var(--accent-2); box-shadow: 0 0 0 1px var(--accent-2) inset; }
+.opcao-txt { flex: 1; display: grid; gap: 2px; }
+.opcao-txt small, .opcao-preco small { color: var(--muted); font-size: 0.8rem; }
+.opcao-preco { display: grid; justify-items: end; text-align: right; }
+.opcao-preco strong { font-family: var(--display); font-size: 1.15rem; color: var(--accent-2); }
+.opcao-preco .tabela { color: var(--muted); font-size: 0.85rem; }
+.opcao:has(input:disabled) { opacity: 0.75; cursor: not-allowed; }
+.noites { display: grid; gap: 4px; padding-left: 8px; }
+.noites .is-off { opacity: 0.6; text-decoration: line-through; }
+.sugestao { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; padding: 12px 14px; border-radius: 12px; border: 1px dashed var(--accent-2); }
+.sugestao p { margin: 0; color: var(--text); }
+.total-pedido { margin: 0; font-size: 1.1rem; color: var(--text-2); }
+.total-pedido strong { font-family: var(--display); font-size: 1.4rem; color: var(--text); }
+
+#turmaForm { margin-top: 22px; display: grid; gap: 16px; }
+#turmaForm .grupo { border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; margin: 0; background: var(--card); display: grid; gap: 4px; }
+#turmaForm .subgrupo { border: 1px dashed var(--line); border-radius: 14px; padding: 14px; margin: 8px 0 0; display: grid; gap: 4px; }
+#turmaForm legend { padding: 0 6px; font-weight: 600; color: var(--text); }
+#turmaForm .field input[aria-invalid="true"], #turmaForm .field select[aria-invalid="true"] { border-color: var(--danger); }
+#turmaForm .err { display: block; margin: -2px 0 8px; }
+#turmaForm .check-field + .err { margin-left: 30px; }
+#turmaForm .check-field a { color: var(--accent); }
+.field select { padding: 12px 14px; border-radius: 12px; border: 1px solid var(--line); background: var(--bg); color: var(--text); font: 0.95rem var(--font); }
+.field select:focus { outline: 2px solid rgba(45, 212, 240, 0.5); outline-offset: 1px; }
+.field input[type="date"] { color-scheme: dark; }
+
+.turma-resultado { margin-top: 22px; }
+.turma-resultado .qr { max-width: 260px; margin: 16px auto; background: var(--text); padding: 10px; border-radius: 12px; }
+.turma-resultado .copy-box { display: grid; gap: 8px; margin: 12px 0; }
+.turma-resultado .copy-box label { color: var(--muted); font-size: 0.85rem; }
+.turma-itens { margin: 0 0 12px; padding-left: 1.2em; color: var(--text-2); font-size: 0.9rem; }
+.codigo { font-family: var(--display); letter-spacing: 0.06em; color: var(--accent-2); }
+
+/* ---------- Painel da Turma 01 (turma-admin.html) ---------- */
+.ta-wrap { padding-top: 22px; padding-bottom: 60px; max-width: 900px; }
+.ta-h1 { font-family: var(--display); font-size: 1.5rem; margin: 0 0 16px; }
+.ta-h2 { font-family: var(--display); font-size: 1.15rem; margin: 22px 0 10px; }
+.ta-login { max-width: 420px; }
+.ta-status:empty { display: none; }
+.ta-status { padding: 10px 14px; border-radius: 12px; background: var(--card); }
+.ta-botoes { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.ta-botao { padding: 16px; border-radius: var(--radius); background: var(--card); border: 1px solid var(--line); display: grid; gap: 8px; }
+.ta-botao h3 { margin: 0; font-size: 1rem; }
+.ta-timer { margin: 0; color: var(--muted); }
+.ta-timer strong { font-family: var(--display); font-size: 1.6rem; color: var(--accent-2); font-variant-numeric: tabular-nums; }
+.ta-botao .btn { padding: 1em; font-size: 1.02rem; }
+.ta-contadores { list-style: none; padding: 0; margin: 0 0 12px; display: grid; gap: 6px; font-variant-numeric: tabular-nums; color: var(--text); }
+.ta-abas { flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+.ta-lista { display: grid; gap: 12px; }
+.ta-card h3 { margin: 0 0 8px; font-size: 1rem; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.ta-card p { margin: 0 0 8px; color: var(--text-2); }
+.ta-card small { color: var(--muted); }
+.ta-card .card-actions { flex-wrap: wrap; gap: 8px; }
+.tag-pendente, .tag-warn { background: var(--warning); color: var(--gold-ink); }
+.tag-pago { background: var(--success); color: var(--wa-ink); }
+.tag-fila, .tag-expirada, .tag-cancelada, .tag-reembolsado { background: var(--card-2); color: var(--text); border: 1px solid var(--line); }
+.tag-gold { background: var(--accent-2); color: var(--gold-ink); }
+.ta-rodape { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+
+/* ---------- Certificado (certificado-turma1.html) ---------- */
+.cert-controles { padding: 22px 16px; display: grid; gap: 10px; max-width: 760px; }
+.cert { max-width: 1000px; margin: 0 auto 40px; aspect-ratio: 1.414 / 1; padding: 6% 8%; background: var(--text); color: var(--bg); border: 10px double var(--accent-2); text-align: center; display: grid; align-content: center; gap: 6px; }
+.cert-kicker { margin: 0; letter-spacing: 0.25em; text-transform: uppercase; font-size: 0.85rem; }
+.cert-titulo { margin: 0; font-family: var(--display); font-size: 2.4rem; font-weight: 700; }
+.cert-texto { margin: 6px auto; max-width: 720px; }
+.cert-nome { margin: 4px 0; font-family: var(--display); font-size: 2rem; font-weight: 700; border-bottom: 2px solid var(--bg); display: inline-block; justify-self: center; padding: 0 24px 4px; }
+.cert-modulos { margin: 4px auto; text-align: left; display: inline-block; justify-self: center; }
+.cert-local { margin: 10px 0 0; }
+.cert-assinatura { margin-top: 18px; justify-self: center; }
+.cert-linha { display: block; width: 260px; border-top: 1px solid var(--bg); margin: 0 auto 6px; }
+.cert-assinatura p { margin: 0; }
+@media print {
+  @page { size: A4 landscape; margin: 0; }
+  .cert-page .cert-controles, .cert-page .skip-link { display: none !important; }
+  .cert-page { background: var(--text); }
+  .cert { margin: 0; max-width: none; width: 100vw; height: 100vh; aspect-ratio: auto; }
+}
+@media (max-width: 560px) {
+  .opcao { flex-wrap: wrap; }
+  .opcao-preco { justify-items: start; text-align: left; width: 100%; padding-left: 32px; }
+  .cert-titulo { font-size: 1.5rem; }
+  .cert-nome { font-size: 1.3rem; }
+}
