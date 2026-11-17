@@ -170,7 +170,7 @@ test('Inscrição completa (combo na promo): Pix com valor exato, QR, copia e co
   assert.match(codigo, /^FP[2-9A-HJ-NP-Z]{6}$/);
   assert.match(txt(res), /R\$\s?124,90/);
   assert.match(txt(res), /KENJI MARCOS SUZUKI/);
-  assert.match(txt($(document, 'reservaTimer')), /^(29|30):\d{2}$/);
+  assert.match(txt($(document, 'reservaTimer')), /^0[45]:\d{2}$/);
   const wa = $(document, 'btnComprovante').getAttribute('href');
   assert.match(wa, /^https:\/\/wa\.me\/5517981596797\?text=/);
   assert.ok(decodeURIComponent(wa).includes(codigo));

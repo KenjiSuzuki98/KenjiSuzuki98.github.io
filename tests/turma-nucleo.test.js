@@ -170,8 +170,8 @@ test('Vagas: oficial 10, aceita até 14 por noite; titular e cadeira extra conta
   assert.equal(N.cabe_([2], 1, { 1: 14, 2: 13, 3: 14 }).cabe, true);
 });
 
-test('Reserva: pendente vencida vira expirada (30 min de trava, N-4)', () => {
-  assert.equal(N.TURMA.reservaMinutos, 30);
+test('Reserva: pendente vencida vira expirada (5 min de trava, decisão do Kenji)', () => {
+  assert.equal(N.TURMA.reservaMinutos, 5);
   const agora = 1000;
   assert.equal(N.statusEfetivo_({ status: 'pendente', expiraEm: 999 }, agora), 'expirada');
   assert.equal(N.statusEfetivo_({ status: 'pendente', expiraEm: 1001 }, agora), 'pendente');

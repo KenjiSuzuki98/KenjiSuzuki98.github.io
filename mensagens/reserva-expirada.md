@@ -1,4 +1,4 @@
-# Reserva expirada (30 minutos sem Pix)
+# Reserva expirada (5 minutos sem Pix)
 
 Oi, [NOME]! Aqui é o Kenji. O tempo da sua reserva [CÓDIGO DA RESERVA] na Turma 01 acabou antes de o Pix chegar, e a vaga foi liberada.
 

@@ -136,8 +136,8 @@
     const s = r.status;
     const acoes = [];
     if (s === 'pendente' || s === 'expirada' || s === 'fila' || s === 'cancelada') acoes.push(botao('pagar', 'Marcar pago'));
-    if (s === 'pendente' || s === 'expirada') acoes.push(botao('estender', 'Estender 30 min'));
-    if (s === 'fila' || s === 'cancelada') acoes.push(botao('promover', 'Promover (30 min para pagar)'));
+    if (s === 'pendente' || s === 'expirada') acoes.push(botao('estender', 'Estender 5 min'));
+    if (s === 'fila' || s === 'cancelada') acoes.push(botao('promover', 'Promover (5 min para pagar)'));
     if (s === 'pendente' || s === 'expirada' || s === 'fila') acoes.push(botao('liberar', 'Liberar vaga'));
     if (s === 'pago') acoes.push(botao('reembolsar', 'Marcar reembolsado'));
     if (s === 'pago' && r.primeiro) acoes.push(botao('vale', r.vale === 'entregue' ? 'Desmarcar vale R$ 10' : 'Vale R$ 10 entregue'));
@@ -209,7 +209,7 @@
         : 'Reembolso registrado e vaga liberada. Ninguém da fila cabe nas noites liberadas.');
       if (out.proximaFila) { aba = 'fila'; render(); }
     } else {
-      const textos = { pagar: 'Pagamento confirmado. Envie a confirmação com o convite do grupo.', estender: 'Reserva estendida por 30 minutos.', promover: 'Promovida da fila: 30 minutos para pagar. Avise a pessoa.', liberar: 'Vaga liberada.', vale: 'Vale atualizado.' };
+      const textos = { pagar: 'Pagamento confirmado. Envie a confirmação com o convite do grupo.', estender: 'Reserva estendida por mais 5 minutos.', promover: 'Promovida da fila: 5 minutos para pagar. Avise a pessoa agora.', liberar: 'Vaga liberada.', vale: 'Vale atualizado.' };
       aviso(textos[op] || 'Feito.');
     }
   }

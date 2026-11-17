@@ -138,7 +138,7 @@ test('Liberar e reembolsar pedem confirmação; sem confirmar, nada muda', async
   assert.equal(gas.admin(gas.login(), 'listar').reservas[0].status, 'pago');
 });
 
-test('Reembolso libera a vaga e oferece promover a fila; promover dá nova reserva de 30 min', async (t) => {
+test('Reembolso libera a vaga e oferece promover a fila; promover dá nova reserva de 5 min', async (t) => {
   const gas = createGas();
   const cods = [];
   for (let i = 0; i < 14; i++) cods.push(gas.post(inscricao({ combo: false, avulsos: [1] })).codigo);

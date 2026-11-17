@@ -7,7 +7,7 @@ npm test
 ```
 
 Os testes `tests/turma-*.test.js` simulam a planilha e o Apps Script e cobrem: promoção A/B ligada e
-desligada, expiração dos 15 minutos, preço calculado só no servidor, trava de preço por 30 minutos,
+desligada, expiração dos 15 minutos, preço calculado só no servidor, trava de preço por 5 minutos,
 reserva expirada, combo com uma noite lotada, cadeira extra, menor de 15 e de 18, fila de espera,
 CPF duplicado, reembolso promovendo a fila, vale dos 2 primeiros, CSV, limpeza dos testes, fail-safe
 da página (servidor fora do ar → preço de tabela) e acessibilidade.
@@ -24,7 +24,7 @@ Abra o painel no computador e a página no celular **com dados móveis** (Wi-Fi 
 |---|---|---|---|
 | 1 | Abrir a página sem promoção | Combo R$ 249,90, avulsa R$ 199,90, cadeira extra "indisponível" | |
 | 2 | Painel: botão **A** | Em até 15 s a página mostra R$ 124,90 / R$ 99,90 com o preço de tabela riscado e a contagem | |
-| 3 | Inscrição TESTE de combo | Tela do Pix com R$ 124,90, código FP..., contagem de 30 min | |
+| 3 | Inscrição TESTE de combo | Tela do Pix com R$ 124,90, código FP..., contagem de 5 minutos | |
 | 4 | Escanear o QR **sem pagar** (outra pessoa) | O app do banco mostra **R$ 124,90** e **KENJI MARCOS SUZUKI** | |
 | 5 | "Copiar código Pix" e colar no app do banco | Mesmo valor e nome | |
 | 6 | Painel: **Encerrar agora** no A | A página volta a R$ 249,90 | |

@@ -46,6 +46,13 @@ test('Mensagens: pós-live avisa que a promoção acabou e mantém "vagas limita
   assert.match(s, /vagas limitadas/i);
 });
 
+test('Retenção da vaga: todos os textos dizem 5 minutos (nenhum fala em 30)', () => {
+  const arquivos = ['turma.html', 'turma-termos.html', 'assets/js/turma-admin.js', 'assets/js/turma.js', 'mensagens/fila-espera.md', 'mensagens/reserva-expirada.md', 'docs/turma1-instalacao.md', 'docs/turma1-ensaio.md'];
+  const todos = arquivos.map((f) => [f, read(f)]);
+  for (const [f, s] of todos) assert.doesNotMatch(s, /30 ?min/i, `${f} ainda fala em 30 minutos`);
+  for (const f of ['turma.html', 'turma-termos.html', 'mensagens/fila-espera.md']) assert.match(read(f), /5 minutos/, `${f} deveria dizer 5 minutos`);
+});
+
 test('Termos da Turma 1: regras, reembolso, A1, A2 e A3 com prazos ainda a definir bem visíveis', async () => {
   const { document } = await loadPage('turma-termos.html', { data: fullData() });
   for (const id of ['regras', 'pagamento', 'reembolso', 'responsavel', 'imagem', 'privacidade']) assert.ok(document.getElementById(id), `falta #${id}`);

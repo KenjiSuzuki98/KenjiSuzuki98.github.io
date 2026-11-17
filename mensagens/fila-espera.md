@@ -12,6 +12,6 @@ Seus dados estão guardados. Se abrir vaga, eu te chamo por aqui na hora. Nenhum
 
 Oi, [NOME]! Boa notícia: **abriu uma vaga** na Turma 01 para [NOITES]. 🥋
 
-Sua vaga fica reservada por 30 minutos, pelo mesmo valor da sua inscrição ([VALOR]). Para pagar via Pix: [LINK DA RESERVA]
+Sua vaga fica reservada por 5 minutos, pelo mesmo valor da sua inscrição ([VALOR]). Para pagar via Pix: [LINK DA RESERVA]
 
 Depois é só me mandar o comprovante por aqui.

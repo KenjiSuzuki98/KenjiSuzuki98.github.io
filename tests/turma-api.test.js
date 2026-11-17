@@ -62,7 +62,7 @@ test('Inscrição: combo na promo gera reserva pendente com Pix do valor exato e
   assert.equal(r.status, 'pendente');
   assert.match(r.codigo, /^FP[2-9A-HJ-NP-Z]{6}$/);
   assert.equal(r.total, 12490);
-  assert.equal(r.expiraEm, gas.clock.ms + 30 * 60000);
+  assert.equal(r.expiraEm, gas.clock.ms + 5 * 60000);
   assert.ok(r.pix.includes('5406124.90'));
   assert.ok(r.pix.includes('0508' + r.codigo));
   assert.equal(gas.rows().length, 2, 'cabeçalho + 1 reserva');
@@ -79,8 +79,9 @@ test('Inscrição: o valor vem do servidor; o navegador não consegue mudar o pr
 test('Trava de preço: quem reservou na promo mantém o valor depois que ela acaba', () => {
   const gas = createGas();
   ligar(gas, 'promoA');
+  gas.advance(12);
   const r = gas.post(inscricao());
-  gas.advance(20);
+  gas.advance(4); // a promoção (15 min) acabou; a reserva (5 min) ainda vale
   assert.equal(gas.get().promoA.ativa, false);
   const c = gas.get({ action: 'reserva', codigo: r.codigo });
   assert.equal(c.ok, true);
@@ -90,10 +91,12 @@ test('Trava de preço: quem reservou na promo mantém o valor depois que ela aca
   assert.doesNotMatch(JSON.stringify(c), /cpf|Maria|celular|email/i, 'consulta pública sem dados pessoais');
 });
 
-test('Reserva expira em 30 min sem pagamento e libera a vaga', () => {
+test('Reserva expira em 5 min sem pagamento e libera a vaga', () => {
   const gas = createGas();
   const r = gas.post(inscricao());
-  gas.advance(31);
+  gas.advance(4);
+  assert.equal(gas.get({ action: 'reserva', codigo: r.codigo }).status, 'pendente');
+  gas.advance(1);
   assert.equal(gas.get({ action: 'reserva', codigo: r.codigo }).status, 'expirada');
   const tok = gas.login();
   const lista = gas.admin(tok, 'listar');
@@ -137,7 +140,7 @@ test('CPF duplicado: recusa nova inscrição com CPF que já tem reserva ativa',
   const r2 = gas.post(inscricao({ titular: { ...p, nome: 'Outra Pessoa Teste' } }));
   assert.equal(r2.ok, false);
   assert.equal(r2.erro, 'cpf_duplicado');
-  gas.advance(31); // a primeira expirou: pode tentar de novo
+  gas.advance(6); // a primeira expirou: pode tentar de novo
   assert.equal(gas.post(inscricao({ titular: p })).ok, true);
 });
 
@@ -240,27 +243,27 @@ test('Painel: pagamento de reserva já expirada só entra se ainda houver vaga (
   const gas = createGas();
   const tok = gas.login();
   const atrasado = gas.post(inscricao({ combo: false, avulsos: [1] })).codigo;
-  gas.advance(31);
+  gas.advance(6);
   for (let i = 0; i < 14; i++) gas.post(inscricao({ combo: false, avulsos: [1] }));
   const r = gas.admin(tok, 'pagar', { codigo: atrasado });
   assert.equal(r.ok, false); assert.equal(r.erro, 'sem_vaga');
   assert.equal(gas.admin(tok, 'pagar', { codigo: atrasado, forcar: true }).ok, true);
 });
 
-test('Painel: estender +30 min e liberar vaga', () => {
+test('Painel: estender +5 min e liberar vaga', () => {
   const gas = createGas();
   const tok = gas.login();
   const c = gas.post(inscricao()).codigo;
-  gas.advance(25);
+  gas.advance(4);
   gas.admin(tok, 'estender', { codigo: c });
-  gas.advance(25);
+  gas.advance(4);
   assert.equal(gas.get({ action: 'reserva', codigo: c }).status, 'pendente');
   gas.admin(tok, 'liberar', { codigo: c });
   assert.equal(gas.get({ action: 'reserva', codigo: c }).status, 'cancelada');
   assert.equal(gas.admin(tok, 'listar').ocupacao[1], 0);
 });
 
-test('Fila: reembolso libera a vaga e indica quem promover; promover dá 30 min com o preço travado', () => {
+test('Fila: reembolso libera a vaga e indica quem promover; promover dá 5 min com o preço travado', () => {
   const gas = createGas();
   const tok = gas.login();
   ligar(gas, 'promoA');
@@ -279,7 +282,7 @@ test('Fila: reembolso libera a vaga e indica quem promover; promover dá 30 min 
   const c = gas.get({ action: 'reserva', codigo: fila.codigo });
   assert.equal(c.status, 'pendente');
   assert.equal(c.total, 12490);
-  assert.equal(c.expiraEm, gas.clock.ms + 30 * 60000);
+  assert.equal(c.expiraEm, gas.clock.ms + 5 * 60000);
   assert.equal(gas.admin(tok, 'listar').reservas.find((x) => x.codigo === pagos[0]).status, 'reembolsado');
 });
 

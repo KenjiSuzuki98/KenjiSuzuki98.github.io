@@ -23,7 +23,7 @@ var TURMA = {
   precos: { avulsoTabela: 19990, avulsoPromo: 9990, comboTabela: 24990, comboPromo: 12490, cadeiraExtra: 3000 },
   capacidade: { oficial: 10, maxima: 14 },
   promoMinutos: 15,
-  reservaMinutos: 30,
+  reservaMinutos: 5,
   fimVendas: '2026-11-25T23:00:00-03:00',
   dataReferenciaIdade: '2026-11-23',
   idadeMinima: 15,

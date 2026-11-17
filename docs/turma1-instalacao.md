@@ -73,7 +73,7 @@ Assim a URL `/exec` continua a mesma. **Não** use "Nova implantação" de novo 
   bloqueado por 15 minutos (sessões já abertas continuam funcionando).
 - Botão **A** liga a promoção (combo R$ 124,90, avulsa R$ 99,90) por 15 minutos para todo mundo.
   Botão **B** liga a cadeira extra (+R$ 30) por 15 minutos. São independentes e desligam sozinhos.
-- Quem mandou o formulário durante a promoção tem **30 minutos com o preço travado** para pagar.
+- Quem mandou o formulário durante a promoção tem **5 minutos com o preço travado** para pagar.
 - Confirme cada Pix **no app do banco** antes de tocar em "Marcar pago". Depois, toque em
   **"Enviar confirmação + grupo"**: abre o WhatsApp com a mensagem pronta e o link do grupo.
 - Os **2 primeiros pagamentos confirmados** aparecem com o selo "1º/2º inscrito · vale R$ 10".
