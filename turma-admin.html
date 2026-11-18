@@ -55,6 +55,20 @@
         </ul>
         <label class="check-field" for="chkVendas"><input type="checkbox" id="chkVendas"><span>Vendas abertas na página</span></label>
         <label class="check-field" for="chkImagem"><input type="checkbox" id="chkImagem"><span>Autorização de imagem obrigatória para se inscrever</span></label>
+        <label class="check-field" for="chkExtraSempre"><input type="checkbox" id="chkExtraSempre"><span>Cadeira extra (+R$ 30) sempre disponível, sem precisar do botão B</span></label>
+      </section>
+
+      <section class="ta-doacao" aria-labelledby="doacaoTitulo">
+        <h2 id="doacaoTitulo" class="ta-h2">Códigos de doação</h2>
+        <p class="muted-text">Cada código dá o combo das 3 noites de graça para uma pessoa e vale uma vez. Se a pessoa quiser cadeira extra, paga só os R$ 30.</p>
+        <div class="ta-gerar">
+          <div class="field">
+            <label for="notaCodigo">Para quem é (opcional)</label>
+            <input id="notaCodigo" maxlength="80" autocomplete="off" placeholder="Ex.: Ana, filha da Dona Maria">
+          </div>
+          <button type="button" class="btn btn-gold" id="btnGerarCodigo">Gerar código de doação</button>
+        </div>
+        <ul class="ta-codigos" id="listaCodigos"></ul>
       </section>
 
       <section aria-labelledby="listaTitulo">

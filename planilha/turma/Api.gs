@@ -10,6 +10,8 @@
  *   ADMIN_SENHA  senha do painel (mínimo 10 caracteres; use 16 ou mais)
  *   GRUPO_TURMA  link do grupo fechado "Turma 01" (só aparece no painel)
  *   PLANILHA_ID  (opcional) ID da planilha a usar quando o script é separado da planilha
+ * Criadas pelo painel (não precisa mexer): PROMO_A_ATE, PROMO_B_ATE, VENDAS_ABERTAS,
+ *   IMAGEM_OBRIGATORIA, EXTRA_SEMPRE e CODIGOS_DOACAO.
  * Nada disso fica no código, porque o repositório do site é público.
  *
  * Depois de mudar o código: Implantar → Gerenciar implantações → lápis
@@ -69,6 +71,7 @@ function config_() {
     promoBAte: Number(p.getProperty('PROMO_B_ATE') || 0),
     vendasAbertas: p.getProperty('VENDAS_ABERTAS') !== '0',
     imagemObrigatoria: p.getProperty('IMAGEM_OBRIGATORIA') !== '0',
+    extraSempre: p.getProperty('EXTRA_SEMPRE') !== '0', // cadeira extra (+R$ 30) disponível sem o botão B
   };
 }
 
@@ -77,7 +80,7 @@ function promoEstado_(cfg, agora) {
   return {
     promoA: { ativa: a, ate: a ? cfg.promoAAte : 0 },
     promoB: { ativa: b, ate: b ? cfg.promoBAte : 0 },
-    precos: precosVigentes_({ promoA: a, promoB: b }),
+    precos: precosVigentes_({ promoA: a, promoB: b || cfg.extraSempre }),
   };
 }
 
@@ -198,14 +201,30 @@ function inscrever_(d, agora) {
     if (!noiteAberta_(pedido.noites[i], agora)) return { ok: false, erro: 'noite_encerrada', noite: pedido.noites[i] };
   }
 
+  // Código de doação: isenta o combo das 3 noites (a cadeira extra continua paga).
+  var codigoBonus = normalizarCodigoDoacao_(d.codigoBonus);
+  if (d.codigoBonus && String(d.codigoBonus).trim() && !codigoBonus) return { ok: false, erro: 'codigo_invalido' };
+  if (codigoBonus) {
+    if (pedido.tipo !== 'combo') return { ok: false, erro: 'codigo_so_combo' };
+    var cod = codigos_()[codigoBonus];
+    if (!cod || cod.cancelado) return { ok: false, erro: 'codigo_invalido' };
+  }
+
   var pe = promoEstado_(cfg, agora);
   var calc = calcularPedido_(pedido, pe.precos);
   if (!calc.ok) return { ok: false, erro: calc.erro };
+  if (codigoBonus) {
+    calc.itens[0] = { descricao: 'Combo 3 noites (isento com o código ' + codigoBonus + ')', centavos: 0 };
+    calc.total = calc.itens.reduce(function (s, it) { return s + it.centavos; }, 0);
+  }
 
   var v = validarInscricao_(d, { imagemObrigatoria: cfg.imagemObrigatoria });
   if (!v.ok) return { ok: false, erro: 'dados_invalidos', erros: v.erros };
 
   var reservas = lerReservas_();
+  if (codigoBonus && statusCodigo_(codigoBonus, codigos_()[codigoBonus], reservas, agora).status !== 'disponivel') {
+    return { ok: false, erro: 'codigo_usado' };
+  }
   var cpfs = [v.titular.cpf].concat(v.extra ? [v.extra.cpf] : []);
   for (var j = 0; j < reservas.length; j++) {
     var r0 = reservas[j];
@@ -224,12 +243,15 @@ function inscrever_(d, agora) {
   var c = v.consentimentos;
   c.privacidadeEm = agora;
   c.versao = TURMA.versaoTextos;
+  var isentoTotal = cab.cabe && calc.total === 0; // código de doação sem cadeira extra: confirmado na hora
   var r = {
     codigo: codigo,
-    status: cab.cabe ? 'pendente' : 'fila',
+    status: !cab.cabe ? 'fila' : (isentoTotal ? 'pago' : 'pendente'),
     criadoEm: agora,
-    expiraEm: cab.cabe ? agora + TURMA.reservaMinutos * 60000 : 0,
-    pagoEm: 0,
+    expiraEm: cab.cabe && !isentoTotal ? agora + TURMA.reservaMinutos * 60000 : 0,
+    pagoEm: isentoTotal ? agora : 0,
+    isento: !!codigoBonus,
+    codigoBonus: codigoBonus,
     vale: '',
     tipo: pedido.tipo,
     noites: pedido.noites,
@@ -242,14 +264,42 @@ function inscrever_(d, agora) {
     titular: v.titular,
     extraPessoa: v.extra,
     consentimentos: c,
-    historico: [{ em: agora, acao: cab.cabe ? 'reserva' : 'fila' }],
+    historico: [{ em: agora, acao: !cab.cabe ? 'fila' : (isentoTotal ? 'isento (código ' + codigoBonus + ')' : 'reserva') }],
   };
   salvar_(r);
 
   if (!cab.cabe) {
-    return { ok: true, status: 'fila', codigo: codigo, lotadas: cab.lotadas, total: calc.total, itens: calc.itens };
+    return { ok: true, status: 'fila', codigo: codigo, lotadas: cab.lotadas, total: calc.total, itens: calc.itens, isento: r.isento };
   }
-  return { ok: true, status: 'pendente', codigo: codigo, total: calc.total, itens: calc.itens, noites: pedido.noites, expiraEm: r.expiraEm, pix: pixPayload_({ centavos: calc.total, txid: codigo }) };
+  if (isentoTotal) {
+    return { ok: true, status: 'pago', codigo: codigo, total: 0, itens: calc.itens, noites: pedido.noites, isento: true };
+  }
+  return { ok: true, status: 'pendente', codigo: codigo, total: calc.total, itens: calc.itens, noites: pedido.noites, expiraEm: r.expiraEm, isento: r.isento, pix: pixPayload_({ centavos: calc.total, txid: codigo }) };
+}
+
+// ---------- Códigos de doação ----------
+// Ficam nas propriedades do script: { "DOA-XXXXXX": { nota, criadoEm, cancelado } }.
+// O código está "usado" enquanto houver uma reserva ativa com ele; se ela expirar ou for liberada, volta a valer.
+function codigos_() {
+  try { return JSON.parse(props_().getProperty('CODIGOS_DOACAO') || '{}') || {}; } catch (e) { return {}; }
+}
+function salvarCodigos_(c) { props_().setProperty('CODIGOS_DOACAO', JSON.stringify(c)); }
+
+function normalizarCodigoDoacao_(v) {
+  var s = String(v || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (!s) return '';
+  if (s.indexOf('DOA') === 0) s = s.slice(3);
+  return /^[2-9A-HJ-NP-Z]{6}$/.test(s) ? 'DOA-' + s : '';
+}
+
+function statusCodigo_(codigo, c, reservas, agora) {
+  if (!c) return { status: 'invalido' };
+  if (c.cancelado) return { status: 'cancelado' };
+  for (var i = 0; i < reservas.length; i++) {
+    var r = reservas[i];
+    if (r.codigoBonus === codigo && ATIVOS.indexOf(statusEfetivo_(r, agora)) >= 0) return { status: 'usado', reserva: r.codigo };
+  }
+  return { status: 'disponivel' };
 }
 
 // ---------- Painel admin ----------
@@ -298,10 +348,28 @@ function admin_(d, agora) {
   }
   if (op === 'vendas') { p.setProperty('VENDAS_ABERTAS', d.abertas ? '1' : '0'); return painel_(agora, false); }
   if (op === 'imagem') { p.setProperty('IMAGEM_OBRIGATORIA', d.obrigatoria ? '1' : '0'); return painel_(agora, false); }
+  if (op === 'extraSempre') { p.setProperty('EXTRA_SEMPRE', d.ligado ? '1' : '0'); return painel_(agora, false); }
   if (op === 'listar') return painel_(agora, false);
   if (op === 'exportar') return painel_(agora, true);
+  if (op === 'gerarCodigo') {
+    var cods = codigos_();
+    var novo;
+    do { novo = 'DOA-' + gerarCodigo_().slice(2); } while (cods[novo]);
+    cods[novo] = { nota: texto_(d.nota, 80), criadoEm: agora, cancelado: false };
+    salvarCodigos_(cods);
+    return { ok: true, codigo: novo };
+  }
 
   var reservas = lerReservas_();
+  if (op === 'cancelarCodigo') {
+    var todos = codigos_();
+    var alvo = todos[String(d.codigo || '')];
+    if (!alvo) return { ok: false, erro: 'nao_encontrado' };
+    if (statusCodigo_(d.codigo, alvo, reservas, agora).status === 'usado') return { ok: false, erro: 'codigo_em_uso' };
+    alvo.cancelado = true;
+    salvarCodigos_(todos);
+    return { ok: true, codigo: d.codigo };
+  }
   if (op === 'limparTestes') {
     var testes = reservas.filter(function (r) { return /^teste\b/i.test(r.titular.nome); });
     var aba = aba_();
@@ -358,8 +426,14 @@ function painel_(agora, completo) {
   var cfg = config_();
   var pe = promoEstado_(cfg, agora);
   var reservas = lerReservas_();
-  var pagos = reservas.filter(function (r) { return statusEfetivo_(r, agora) === 'pago'; })
+  // Vale R$ 10: os 2 primeiros pagamentos confirmados (inscrição isenta por código não conta).
+  var pagos = reservas.filter(function (r) { return statusEfetivo_(r, agora) === 'pago' && !r.isento; })
     .sort(function (a, b) { return a.pagoEm - b.pagoEm; });
+  var cods = codigos_();
+  var codigos = Object.keys(cods).map(function (k) {
+    var st = statusCodigo_(k, cods[k], reservas, agora);
+    return { codigo: k, nota: cods[k].nota || '', criadoEm: cods[k].criadoEm, status: st.status, reserva: st.reserva || '' };
+  }).sort(function (a, b) { return a.criadoEm - b.criadoEm; });
   var ordem = {};
   pagos.slice(0, 2).forEach(function (r, i) { ordem[r.codigo] = i + 1; });
   var lista = reservas.map(function (r) {
@@ -377,9 +451,11 @@ function painel_(agora, completo) {
     vendasAbertas: cfg.vendasAbertas,
     vendasNoPrazo: agora < Date.parse(TURMA.fimVendas),
     imagemObrigatoria: cfg.imagemObrigatoria,
+    extraSempre: cfg.extraSempre,
     capacidade: TURMA.capacidade,
     ocupacao: ocupacao_(reservas, agora),
     reservas: lista,
+    codigos: codigos,
     grupo: props_().getProperty('GRUPO_TURMA') || '',
   };
 }

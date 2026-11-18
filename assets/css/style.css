@@ -575,3 +575,12 @@ figure.card-media { margin: 0; position: relative; }
   .cert-titulo { font-size: 1.5rem; }
   .cert-nome { font-size: 1.3rem; }
 }
+
+/* Painel: códigos de doação */
+.ta-gerar { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; }
+.ta-gerar .field { flex: 1 1 220px; margin: 0; }
+.ta-codigos { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 10px; }
+.ta-codigo { display: grid; gap: 8px; padding: 12px 14px; border-radius: 14px; background: var(--card); border: 1px solid var(--line); color: var(--text-2); }
+.ta-codigo small { color: var(--muted); }
+.codigo-bonus { margin: 0; }
+.codigo-bonus small { color: var(--muted); }

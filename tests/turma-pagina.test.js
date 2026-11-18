@@ -65,8 +65,8 @@ test('Sem servidor configurado: preço de tabela, aviso e WhatsApp; nada é cole
   assert.ok(!$(document, 'turmaForm') || $(document, 'turmaForm').hidden);
 });
 
-test('Preço de tabela por padrão; cadeira extra indisponível sem o botão B', async (t) => {
-  const { document } = await abrir(t);
+test('Preço de tabela por padrão; com "sempre disponível" desligado, cadeira extra indisponível sem o botão B', async (t) => {
+  const { document } = await abrir(t, { gas: createGas({ props: { EXTRA_SEMPRE: '0' } }) });
   assert.match(txt($(document, 'precoCombo')), /249,90/);
   assert.match(txt($(document, 'precoAvulso')), /199,90/);
   assert.equal($(document, 'promoBanner').hidden, true);
@@ -380,4 +380,67 @@ test('Acessibilidade: página com promoção, cadeira extra, menor de idade e te
   const p2 = await abrir(t, { gas, query: '?reserva=' + r.codigo });
   ({ violations } = await runAxe(p2.window));
   assert.equal(violations.length, 0, violations.map((v) => v.id).join(', '));
+});
+
+
+test('Cadeira extra sempre disponível: aparece liberada por +R$ 30 sem promoção', async (t) => {
+  const { window, document } = await abrir(t);
+  assert.equal($(document, 'optExtra').disabled, false);
+  assert.doesNotMatch(txt($(document, 'extraInfo')), /indisponível|live/i);
+  setv(window, document, 'optExtra', true);
+  assert.match(txt($(document, 'totalPedido')), /279,90/);
+});
+
+test('Código de doação: força o combo, mostra R$ 0,00 e confirma a inscrição sem Pix', async (t) => {
+  const gas = createGas();
+  const { codigo } = gas.admin(gas.login(), 'gerarCodigo', { nota: 'Ana' });
+  const calls = [];
+  const { window, document } = await abrir(t, { gas, calls });
+  setv(window, document, 'modoAvulso', true);
+  setv(window, document, 'noite2', true);
+  setv(window, document, 'codigoBonus', codigo);
+  assert.equal($(document, 'modoCombo').checked, true, 'código vale para o combo');
+  assert.equal($(document, 'modoAvulso').disabled, true);
+  assert.match(txt($(document, 'totalPedido')), /R\$\s?0,00/);
+  assert.match(txt($(document, 'codigoInfo')), /combo das 3 noites/i);
+  preencher(window, document, 't', pessoa());
+  aceitar(window, document);
+  await enviar(window, document);
+  const res = $(document, 'resultado');
+  assert.equal(res.hidden, false, txt($(document, 'formStatus')));
+  assert.match(txt(res), /inscrição confirmada/i);
+  assert.match(txt(res), /isen/i);
+  assert.ok(!res.querySelector('#pixCopia'), 'isento não tem Pix');
+  const wa = res.querySelector('a[href^="https://wa.me/5517981596797"]');
+  assert.ok(wa, 'botão para falar com o Kenji e receber o convite do grupo');
+  assert.ok(decodeURIComponent(wa.getAttribute('href')).includes(txt($(document, 'codigoReserva'))));
+  const body = JSON.parse(calls.filter((c) => c.opts.method === 'POST')[0].opts.body);
+  assert.equal(body.codigoBonus, codigo);
+  assert.deepEqual(body.pedido, { combo: true, avulsos: [], extra: false });
+});
+
+test('Código de doação + cadeira extra: Pix só dos R$ 30', async (t) => {
+  const gas = createGas();
+  const { codigo } = gas.admin(gas.login(), 'gerarCodigo', {});
+  const { window, document } = await abrir(t, { gas });
+  setv(window, document, 'codigoBonus', codigo);
+  setv(window, document, 'optExtra', true);
+  assert.match(txt($(document, 'totalPedido')), /R\$\s?30,00/);
+  preencher(window, document, 't', pessoa());
+  preencher(window, document, 'x', pessoa({ nome: 'José Extra Teste' }));
+  setv(window, document, 'xPar', 'conjuge');
+  aceitar(window, document);
+  await enviar(window, document);
+  assert.ok($(document, 'pixCopia').value.includes('540530.00'), txt($(document, 'formStatus')));
+});
+
+test('Código de doação inválido: avisa e mantém o formulário', async (t) => {
+  const { window, document } = await abrir(t);
+  setv(window, document, 'codigoBonus', 'DOA-ZZZZZZ');
+  preencher(window, document, 't', pessoa());
+  aceitar(window, document);
+  await enviar(window, document);
+  assert.equal($(document, 'resultado').hidden, true);
+  assert.match(txt($(document, 'formStatus')), /código.*(não existe|inválido|não é válido)/i);
+  assert.equal($(document, 'turmaForm').hidden, false);
 });

@@ -38,6 +38,13 @@
     return { combo, avulsos, extra };
   }
 
+  // Código de doação digitado (a validade é conferida só no servidor).
+  const codigoDigitado = () => { const el = $('#codigoBonus'); return el ? el.value.trim() : ''; };
+  // Preços para o total exibido: com código, o combo sai a R$ 0,00 (cadeira extra continua paga).
+  function precosDoPedido(p) {
+    return { avulso: p.avulso, combo: codigoDigitado() ? 0 : p.combo, extra: p.extra };
+  }
+
   function setPreco(atualEl, tabelaEl, atual, tabela) {
     atualEl.textContent = brl(atual);
     const promo = atual < tabela;
@@ -57,6 +64,15 @@
     const comboOk = !estado || estado.comboAberto;
     $('#modoCombo').disabled = !comboOk;
     if (!comboOk && $('#modoCombo').checked) $('#modoAvulso').checked = true;
+    // Com código de doação, vale só o combo.
+    const comCodigo = !!codigoDigitado();
+    if (comCodigo && comboOk) $('#modoCombo').checked = true;
+    $('#modoAvulso').disabled = comCodigo && comboOk;
+    $('#codigoInfo').textContent = !comCodigo
+      ? 'Com um código válido, o combo das 3 noites sai de graça.'
+      : comboOk
+        ? 'Código aplicado ao combo das 3 noites: R$ 0,00 se o código for válido. A cadeira extra continua R$ 30,00.'
+        : 'O código vale só para o combo das 3 noites, que já começou.';
     const modoAvulso = $('#modoAvulso').checked;
     for (const n of [1, 2, 3]) {
       const cb = $('#noite' + n);
@@ -72,11 +88,11 @@
     if (extra.disabled) extra.checked = false;
     $('#extraInfo').textContent = extra.disabled
       ? 'Indisponível no momento.'
-      : 'Condição especial da live: acompanha o titular nas mesmas noites.';
-    if (tinhaExtra && !extra.checked && !concluido) status('A condição da cadeira extra terminou e ela foi desmarcada.');
+      : 'Acompanha o titular nas mesmas noites (cônjuge ou filho(a)).';
+    if (tinhaExtra && !extra.checked && !concluido) status('A cadeira extra ficou indisponível e foi desmarcada.');
 
     const ped = pedido();
-    const calc = calcularPedido_(normalizarPedido_(ped), { avulso: p.avulso, combo: p.combo, extra: p.extra });
+    const calc = calcularPedido_(normalizarPedido_(ped), precosDoPedido(p));
     $('#totalPedido').textContent = calc.ok ? brl(calc.total) : 'escolha pelo menos uma noite';
 
     const sug = $('#sugestaoCombo');
@@ -236,6 +252,7 @@
     const titular = lerPessoa('t');
     if (visivel('tResp')) titular.responsavel = lerResp('t');
     const body = { acao: 'inscrever', pedido: ped, titular, website: $('#fSite').value };
+    if (codigoDigitado()) body.codigoBonus = codigoDigitado();
     if (ped.extra) {
       body.extra = { ...lerPessoa('x'), parentesco: val('xPar') };
       if (visivel('xResp')) body.extra.responsavel = lerResp('x');
@@ -344,7 +361,10 @@
   }
 
   const MENSAGENS = {
-    cadeira_indisponivel: 'A condição da cadeira extra terminou. Desmarque a cadeira extra para continuar.',
+    cadeira_indisponivel: 'A cadeira extra está indisponível agora. Desmarque a cadeira extra para continuar.',
+    codigo_invalido: 'Esse código de doação não é válido. Confira as letras e os números ou fale com o Kenji.',
+    codigo_usado: 'Esse código de doação já foi usado em outra inscrição.',
+    codigo_so_combo: 'O código de doação vale só para o combo das 3 noites.',
     noite_encerrada: 'Uma das noites escolhidas já começou e não está mais à venda. Escolha outra opção.',
     vendas_encerradas: 'As inscrições foram encerradas.',
     pedido_vazio: 'Escolha o combo ou pelo menos uma noite avulsa.',
@@ -363,7 +383,7 @@
     if (!endpoint) { status('As inscrições pelo site ainda não estão abertas. Fale com o Kenji no WhatsApp.'); return; }
 
     const p = precos();
-    const exibido = calcularPedido_(normalizarPedido_(body.pedido), { avulso: p.avulso, combo: p.combo, extra: p.extra });
+    const exibido = calcularPedido_(normalizarPedido_(body.pedido), precosDoPedido(p));
     btn.disabled = true;
     const rotulo = btn.textContent;
     btn.textContent = 'Enviando…';
@@ -371,7 +391,8 @@
     try {
       const res = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body) });
       const r = await res.json();
-      if (r && r.ok && r.status === 'pendente') mostrarPagamento(r, exibido.ok ? exibido.total : r.total);
+      if (r && r.ok && r.status === 'pago') mostrarIsento(r, body.codigoBonus);
+      else if (r && r.ok && r.status === 'pendente') mostrarPagamento(r, exibido.ok ? exibido.total : r.total);
       else if (r && r.ok && r.status === 'fila') mostrarFila(r);
       else if (r && r.erro === 'dados_invalidos') mostrarErros(r.erros);
       else {
@@ -451,6 +472,20 @@
     tick();
   }
 
+  // Código de doação sem cadeira extra: inscrição confirmada na hora, sem Pix.
+  function mostrarIsento(r, codigoBonus) {
+    reserva = r;
+    const msg = `Olá, Kenji! Fiz minha inscrição na Turma 01 (Faixa Preta em IA) com um código de doação. Reserva: ${r.codigo}. Pode me mandar o convite do grupo?`;
+    concluir(`
+      <p class="success-badge">${icon('check')} Inscrição confirmada</p>
+      <h2 id="resultadoTitulo" tabindex="-1">Inscrição confirmada com isenção!</h2>
+      <p>Código da reserva: <strong class="codigo" id="codigoReserva">${esc(r.codigo)}</strong></p>
+      <p>O combo das 3 noites (23, 24 e 25/11, das 20h30 às 22h30) foi liberado pelo código de doação${codigoBonus ? ` <strong>${esc(String(codigoBonus).toUpperCase())}</strong>` : ''}. Nenhum pagamento é necessário.</p>
+      <p>Agora chame o Kenji no WhatsApp para receber o convite do grupo fechado da Turma 01.</p>
+      ${ext(waKenji(msg), `${icon('whatsapp')} Receber o convite do grupo no WhatsApp`, 'class="btn btn-wa btn-block"')}
+      <p class="muted-text">Venha com o celular carregado e com a sua conta Google. Não há tomada para carregar no local.</p>`);
+  }
+
   function mostrarFila(r) {
     reserva = r;
     const lotadas = (r.lotadas || []).map(noiteTxt);
@@ -514,6 +549,7 @@
       if (e.target.id === 'modoCombo' && e.target.checked) [1, 2, 3].forEach((n) => { $('#noite' + n).checked = false; });
       renderPrecos();
     });
+    $('#codigoBonus').addEventListener('input', () => renderPrecos());
     $('#trocarCombo').addEventListener('click', () => {
       $('#modoCombo').checked = true;
       [1, 2, 3].forEach((n) => { $('#noite' + n).checked = false; });

@@ -88,6 +88,8 @@
     }
     $('#chkVendas').checked = !!d.vendasAbertas;
     $('#chkImagem').checked = !!d.imagemObrigatoria;
+    $('#chkExtraSempre').checked = !!d.extraSempre;
+    renderCodigos(d.codigos || []);
     const contagem = {};
     d.reservas.forEach((r) => { contagem[r.status] = (contagem[r.status] || 0) + 1; });
     document.querySelectorAll('[data-aba]').forEach((b) => {
@@ -150,7 +152,8 @@
       <article class="card ta-card" data-codigo="${esc(r.codigo)}" data-status="${esc(s)}">
         <div class="card-body">
           <h3><span class="codigo">${esc(r.codigo)}</span> <span class="tag tag-${esc(s)}">${esc(ROTULO[s] || s)}</span>
-            ${r.primeiro ? `<span class="tag tag-gold">${r.primeiro}º inscrito · vale R$ 10${r.vale === 'entregue' ? ' entregue' : ''}</span>` : ''}</h3>
+            ${r.primeiro ? `<span class="tag tag-gold">${r.primeiro}º inscrito · vale R$ 10${r.vale === 'entregue' ? ' entregue' : ''}</span>` : ''}
+            ${r.isento ? `<span class="tag tag-gold">Isento · ${esc(r.codigoBonus || '')}</span>` : ''}</h3>
           <p>${pessoaTxt(r.titular)}</p>
           ${x ? `<p><small>Cadeira extra (${esc(PARENTESCO[x.parentesco] || x.parentesco)}):</small> ${pessoaTxt(x)}</p>` : ''}
           <p><small>${esc(r.tipo === 'combo' ? 'Combo' : 'Avulso')} · ${esc(noitesTxt(r.noites))} · ${r.pessoas} pessoa(s) · <strong>${brl(r.total)}</strong>${r.promoA ? ' · promo A' : ''}${r.promoB ? ' · promo B' : ''}</small></p>
@@ -159,6 +162,52 @@
           <div class="card-actions">${acoes.join('')}</div>
         </div>
       </article>`;
+  }
+
+  // ---------- Códigos de doação ----------
+  const ROTULO_CODIGO = { disponivel: 'Disponível', usado: 'Usado', cancelado: 'Cancelado' };
+  function mensagemDoacao(codigo) {
+    let url = 'https://kenjisuzuki98.github.io/turma.html';
+    try { url = new URL('turma.html', location.href).href; } catch (e) { /* usa o padrão */ }
+    return [
+      `Você ganhou uma vaga no treinamento "${TURMA.nome}" (Turma 01)! 🥋`,
+      `São 3 noites presenciais: 23, 24 e 25/11, das 20h30 às 22h30, aqui dentro do Mercado França e Filhos (${TURMA.endereco}).`,
+      `Para garantir sua vaga, faça a inscrição em ${url} e use o código de doação ${codigo} no campo "Ganhou um código de doação?". O combo das 3 noites sai de graça.`,
+    ].join('\n\n');
+  }
+  function renderCodigos(codigos) {
+    const lista = $('#listaCodigos');
+    if (!codigos.length) { lista.innerHTML = '<li class="muted-text">Nenhum código gerado ainda.</li>'; return; }
+    lista.innerHTML = codigos.slice().reverse().map((c) => `
+      <li class="ta-codigo" data-doacao="${esc(c.codigo)}">
+        <div><strong class="codigo">${esc(c.codigo)}</strong> <span class="tag tag-${c.status === 'disponivel' ? 'pago' : 'fila'}">${esc(ROTULO_CODIGO[c.status] || c.status)}</span>
+          ${c.reserva ? `<small> · inscrição ${esc(c.reserva)}</small>` : ''}
+          ${c.nota ? `<br><small>${esc(c.nota)}</small>` : ''}</div>
+        <div class="card-actions">
+          <button type="button" class="btn btn-sm" data-copiar-codigo="${esc(c.codigo)}">Copiar código</button>
+          ${c.status === 'disponivel' ? `<a class="btn btn-sm btn-wa" href="https://wa.me/?text=${encodeURIComponent(mensagemDoacao(c.codigo))}" target="_blank" rel="noopener noreferrer">Enviar pelo WhatsApp<span class="sr-only"> (abre em nova aba)</span></a>` : ''}
+          ${c.status === 'disponivel' ? `<button type="button" class="btn btn-sm" data-cancelar="${esc(c.codigo)}">Cancelar código</button>` : ''}
+        </div>
+      </li>`).join('');
+  }
+  async function gerarCodigo() {
+    const nota = $('#notaCodigo').value.trim();
+    const out = await admin('gerarCodigo', { nota });
+    if (!out.ok) { if (out.erro !== 'rede') aviso('Não foi possível gerar o código.'); return; }
+    $('#notaCodigo').value = '';
+    await carregar();
+    aviso(`Código ${out.codigo} gerado. Toque em "Enviar pelo WhatsApp" para mandar para a pessoa.`);
+  }
+  async function cancelarCodigo(codigo) {
+    if (!window.confirm(`Cancelar o código ${codigo}? Quem tiver esse código não vai conseguir usá-lo.`)) return;
+    const out = await admin('cancelarCodigo', { codigo });
+    if (!out.ok) { aviso(out.erro === 'codigo_em_uso' ? 'Esse código já está em uma inscrição ativa. Libere a inscrição antes de cancelar.' : 'Não foi possível cancelar o código.'); return; }
+    await carregar();
+    aviso(`Código ${codigo} cancelado.`);
+  }
+  async function copiarCodigo(codigo) {
+    try { await navigator.clipboard.writeText(codigo); Site.toast('Código copiado.'); }
+    catch (e) { aviso(`Código: ${codigo}`); }
   }
 
   // ---------- Mensagens de WhatsApp para o inscrito ----------
@@ -170,7 +219,9 @@
     const noites = noitesTxt(r.noites);
     if (tipo === 'confirmacao') {
       return [
-        `Olá, ${nome}! Seu Pix da Turma 01 do treinamento "${TURMA.nome}" foi confirmado.`,
+        r.isento && !r.total
+          ? `Olá, ${nome}! Sua inscrição na Turma 01 do treinamento "${TURMA.nome}" está confirmada, com isenção pelo código de doação ${r.codigoBonus || ''}.`
+          : `Olá, ${nome}! Seu Pix da Turma 01 do treinamento "${TURMA.nome}" foi confirmado.`,
         `Código: ${r.codigo} · ${noites} · Total: ${brl(r.total)}`,
         dados && dados.grupo ? `Entre no grupo fechado da Turma 01: ${dados.grupo}` : 'O convite do grupo fechado da Turma 01 vai em seguida.',
         `Local: ${TURMA.endereco}. Recepção às ${TURMA.horario.recepcao}, aula das ${TURMA.horario.aula}.`,
@@ -286,6 +337,14 @@
     $('#btnPromoB').addEventListener('click', () => promo('promoB', true));
     $('#fimPromoB').addEventListener('click', () => promo('promoB', false));
     $('#chkVendas').addEventListener('change', async (e) => { const out = await admin('vendas', { abertas: e.target.checked }); if (out.ok) { aviso(e.target.checked ? 'Vendas abertas.' : 'Vendas fechadas na página.'); await carregar(); } });
+    $('#chkExtraSempre').addEventListener('change', async (e) => { const out = await admin('extraSempre', { ligado: e.target.checked }); if (out.ok) { aviso(e.target.checked ? 'Cadeira extra sempre disponível por R$ 30.' : 'Cadeira extra só com o botão B.'); await carregar(); } });
+    $('#btnGerarCodigo').addEventListener('click', gerarCodigo);
+    $('#listaCodigos').addEventListener('click', (e) => {
+      const cancelar = e.target.closest('[data-cancelar]');
+      if (cancelar) cancelarCodigo(cancelar.dataset.cancelar);
+      const copiar = e.target.closest('[data-copiar-codigo]');
+      if (copiar) copiarCodigo(copiar.dataset.copiarCodigo);
+    });
     $('#chkImagem').addEventListener('change', async (e) => { const out = await admin('imagem', { obrigatoria: e.target.checked }); if (out.ok) { aviso(e.target.checked ? 'Autorização de imagem obrigatória.' : 'Autorização de imagem opcional.'); await carregar(); } });
     document.querySelectorAll('[data-aba]').forEach((b) => b.addEventListener('click', () => { aba = b.dataset.aba; render(); }));
     $('#lista').addEventListener('click', (e) => {

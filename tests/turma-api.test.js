@@ -6,6 +6,7 @@ const assert = require('node:assert/strict');
 const { createGas, inscricao, pessoa, responsavel } = require('./turma-gas');
 
 const ligar = (gas, op) => gas.admin(gas.login(), op, { ligar: true });
+const txt0 = (o) => JSON.stringify(o);
 
 test('Estado público: preço de tabela por padrão, relógio do servidor e sem revelar vagas', () => {
   const gas = createGas();
@@ -15,7 +16,8 @@ test('Estado público: preço de tabela por padrão, relógio do servidor e sem 
   assert.equal(e.vendasAbertas, true);
   assert.equal(e.promoA.ativa, false);
   assert.equal(e.promoB.ativa, false);
-  assert.deepEqual(e.precos, { avulso: { tabela: 19990, atual: 19990 }, combo: { tabela: 24990, atual: 24990 }, extra: null });
+  assert.deepEqual(e.precos, { avulso: { tabela: 19990, atual: 19990 }, combo: { tabela: 24990, atual: 24990 }, extra: 3000 });
+  assert.doesNotMatch(txt0(e), /DOA-/, 'códigos de doação nunca aparecem no estado público');
   assert.equal(e.noites.length, 3);
   const txt = JSON.stringify(e);
   assert.doesNotMatch(txt, /\b14\b|ocupad|lotad|vagas"/i, 'estado público não pode revelar capacidade');
@@ -23,7 +25,7 @@ test('Estado público: preço de tabela por padrão, relógio do servidor e sem 
 });
 
 test('Botão A: ativa 15 min para todos, expira sozinho e "Encerrar agora" derruba', () => {
-  const gas = createGas();
+  const gas = createGas({ props: { EXTRA_SEMPRE: '0' } });
   const tok = gas.login();
   const r = gas.admin(tok, 'promoA', { ligar: true });
   assert.equal(r.ok, true);
@@ -42,8 +44,8 @@ test('Botão A: ativa 15 min para todos, expira sozinho e "Encerrar agora" derru
   assert.equal(gas.get().promoA.ativa, false);
 });
 
-test('Botão B: cadeira extra +R$ 30 por 15 min, independente do A', () => {
-  const gas = createGas();
+test('Botão B: cadeira extra +R$ 30 por 15 min, independente do A (com "sempre disponível" desligado)', () => {
+  const gas = createGas({ props: { EXTRA_SEMPRE: '0' } });
   ligar(gas, 'promoB');
   const e = gas.get();
   assert.equal(e.promoB.ativa, true);
@@ -103,8 +105,8 @@ test('Reserva expira em 5 min sem pagamento e libera a vaga', () => {
   assert.equal(lista.ocupacao[1], 0);
 });
 
-test('Cadeira extra: só com o botão B; com ele soma R$ 30 uma vez e ocupa 2 lugares', () => {
-  const gas = createGas();
+test('Cadeira extra: com "sempre disponível" desligado, só com o botão B; soma R$ 30 uma vez e ocupa 2 lugares', () => {
+  const gas = createGas({ props: { EXTRA_SEMPRE: '0' } });
   const sem = gas.post(inscricao({ extra: true }));
   assert.equal(sem.ok, false);
   assert.equal(sem.erro, 'cadeira_indisponivel');
@@ -352,4 +354,148 @@ test('Script separado sem PLANILHA_ID: responde erro claro em vez de quebrar', (
   const r = gas.post(inscricao());
   assert.equal(r.ok, false);
   assert.equal(r.erro, 'planilha_nao_configurada');
+});
+
+
+// ---------- Cadeira extra sempre disponível ----------
+test('Cadeira extra sempre disponível por padrão: +R$ 30 sem o botão B', () => {
+  const gas = createGas();
+  const e = gas.get();
+  assert.equal(e.precos.extra, 3000);
+  assert.equal(e.promoB.ativa, false);
+  const r = gas.post(inscricao({ extra: true }));
+  assert.equal(r.ok, true, JSON.stringify(r));
+  assert.equal(r.total, 24990 + 3000);
+});
+
+test('Painel: chave "cadeira extra sempre disponível" liga e desliga; o botão B continua funcionando', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  assert.equal(gas.admin(tok, 'listar').extraSempre, true);
+  gas.admin(tok, 'extraSempre', { ligado: false });
+  assert.equal(gas.admin(tok, 'listar').extraSempre, false);
+  assert.equal(gas.get().precos.extra, null);
+  assert.equal(gas.post(inscricao({ extra: true })).erro, 'cadeira_indisponivel');
+  gas.admin(tok, 'promoB', { ligar: true });
+  assert.equal(gas.get().precos.extra, 3000);
+  gas.admin(tok, 'promoB', { ligar: false });
+  gas.admin(tok, 'extraSempre', { ligado: true });
+  assert.equal(gas.get().precos.extra, 3000);
+});
+
+// ---------- Códigos de doação (isenção do combo) ----------
+const doar = (gas, tok, nota = 'Para Fulano') => gas.admin(tok, 'gerarCodigo', { nota });
+
+test('Doação: o painel gera códigos únicos DOA-XXXXXX e lista com status', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  const a = doar(gas, tok, 'Para a Ana');
+  const b = doar(gas, tok);
+  assert.equal(a.ok, true);
+  assert.match(a.codigo, /^DOA-[2-9A-HJ-NP-Z]{6}$/);
+  assert.notEqual(a.codigo, b.codigo);
+  const l = gas.admin(tok, 'listar');
+  const item = l.codigos.find((c) => c.codigo === a.codigo);
+  assert.equal(item.status, 'disponivel');
+  assert.equal(item.nota, 'Para a Ana');
+  assert.equal(gas.admin('', 'gerarCodigo').ok, false, 'só o painel gera códigos');
+});
+
+test('Doação: código válido isenta o combo e confirma a inscrição na hora, sem Pix', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  ligar(gas, 'promoA');
+  const { codigo } = doar(gas, tok);
+  const body = inscricao(); body.codigoBonus = ' ' + codigo.toLowerCase() + ' ';
+  const r = gas.post(body);
+  assert.equal(r.ok, true, JSON.stringify(r));
+  assert.equal(r.status, 'pago');
+  assert.equal(r.total, 0);
+  assert.equal(r.isento, true);
+  assert.equal(r.pix, undefined);
+  assert.match(r.itens[0].descricao, /isento/i);
+  const l = gas.admin(tok, 'listar');
+  const res = l.reservas.find((x) => x.codigo === r.codigo);
+  assert.equal(res.status, 'pago');
+  assert.equal(res.isento, true);
+  assert.equal(res.codigoBonus, codigo);
+  assert.equal(l.codigos.find((c) => c.codigo === codigo).status, 'usado');
+  assert.equal(l.codigos.find((c) => c.codigo === codigo).reserva, r.codigo);
+  assert.equal(l.ocupacao[1], 1, 'isento ocupa vaga');
+});
+
+test('Doação: cada código vale uma vez', () => {
+  const gas = createGas();
+  const { codigo } = doar(gas, gas.login());
+  const b1 = inscricao(); b1.codigoBonus = codigo;
+  assert.equal(gas.post(b1).ok, true);
+  const b2 = inscricao(); b2.codigoBonus = codigo;
+  const r = gas.post(b2);
+  assert.equal(r.ok, false);
+  assert.equal(r.erro, 'codigo_usado');
+});
+
+test('Doação: código inexistente, cancelado ou com noites avulsas é recusado (nada é gravado)', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  const b = inscricao(); b.codigoBonus = 'DOA-ZZZZZZ';
+  assert.equal(gas.post(b).erro, 'codigo_invalido');
+  const { codigo } = doar(gas, tok);
+  const av = inscricao({ combo: false, avulsos: [1] }); av.codigoBonus = codigo;
+  assert.equal(gas.post(av).erro, 'codigo_so_combo');
+  assert.equal(gas.admin(tok, 'cancelarCodigo', { codigo }).ok, true);
+  const c = inscricao(); c.codigoBonus = codigo;
+  assert.equal(gas.post(c).erro, 'codigo_invalido');
+  assert.ok(gas.rows().length <= 1, 'só o cabeçalho: nenhuma reserva gravada');
+});
+
+test('Doação + cadeira extra: o combo sai de graça e só os R$ 30 vão para o Pix', () => {
+  const gas = createGas();
+  const { codigo } = doar(gas, gas.login());
+  const b = inscricao({ extra: true }); b.codigoBonus = codigo;
+  const r = gas.post(b);
+  assert.equal(r.ok, true, JSON.stringify(r));
+  assert.equal(r.status, 'pendente');
+  assert.equal(r.total, 3000);
+  assert.ok(r.pix.includes('540530.00'));
+});
+
+test('Doação: se a reserva com código expira, o código volta a valer; isento pago não se "libera"', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  const { codigo } = doar(gas, tok);
+  const b = inscricao({ extra: true }); b.codigoBonus = codigo;
+  gas.post(b);
+  gas.advance(6);
+  assert.equal(gas.admin(tok, 'listar').codigos[0].status, 'disponivel');
+  const b2 = inscricao(); b2.codigoBonus = codigo;
+  const r2 = gas.post(b2);
+  assert.equal(r2.status, 'pago');
+  assert.equal(gas.admin(tok, 'liberar', { codigo: r2.codigo }).ok, false);
+});
+
+test('Doação: código em uso não pode ser cancelado; inscrição isenta não conta para o vale dos 2 primeiros', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  const { codigo } = doar(gas, tok);
+  const b = inscricao(); b.codigoBonus = codigo;
+  const isento = gas.post(b);
+  assert.equal(gas.admin(tok, 'cancelarCodigo', { codigo }).erro, 'codigo_em_uso');
+  gas.advance(1);
+  const pago = gas.post(inscricao()).codigo;
+  gas.admin(tok, 'pagar', { codigo: pago });
+  const l = gas.admin(tok, 'listar');
+  assert.equal(l.reservas.find((x) => x.codigo === isento.codigo).primeiro, 0);
+  assert.equal(l.reservas.find((x) => x.codigo === pago).primeiro, 1);
+});
+
+test('Doação: com a turma lotada, a inscrição com código vai para a fila e segura o código', () => {
+  const gas = createGas();
+  const tok = gas.login();
+  for (let i = 0; i < 14; i++) gas.post(inscricao({ combo: false, avulsos: [1] }));
+  const { codigo } = doar(gas, tok);
+  const b = inscricao(); b.codigoBonus = codigo;
+  const r = gas.post(b);
+  assert.equal(r.status, 'fila');
+  assert.equal(gas.admin(tok, 'listar').codigos[0].status, 'usado');
 });

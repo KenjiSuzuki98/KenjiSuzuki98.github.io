@@ -200,3 +200,47 @@ test('Acessibilidade: painel logado com reservas passa no axe-core', async (t) =
   const { violations } = await runAxe(window);
   assert.equal(violations.length, 0, violations.map((v) => `${v.id}: ${v.nodes.map((n) => n.target).join(', ')}`).join('\n'));
 });
+
+
+test('Painel: chave "Cadeira extra sempre disponível" liga e desliga', async (t) => {
+  const { window, document, gas } = await abrir(t);
+  await entrar(window, document);
+  assert.equal($(document, 'chkExtraSempre').checked, true);
+  $(document, 'chkExtraSempre').click();
+  await settle(window, 30);
+  assert.equal(gas.get().precos.extra, null);
+});
+
+test('Painel: gerar código de doação, enviar pelo WhatsApp e cancelar', async (t) => {
+  const { window, document, gas } = await abrir(t);
+  await entrar(window, document);
+  $(document, 'notaCodigo').value = 'Para a Ana';
+  $(document, 'btnGerarCodigo').click();
+  await settle(window, 30);
+  const item = document.querySelector('[data-doacao]');
+  assert.ok(item, 'código aparece na lista');
+  const codigo = item.dataset.doacao;
+  assert.match(codigo, /^DOA-/);
+  assert.match(txt(item), /Para a Ana/);
+  assert.match(txt(item), /disponível/i);
+  const wa = item.querySelector('a[href^="https://wa.me/?text="]');
+  const msg = decodeURIComponent(wa.getAttribute('href').split('text=')[1]);
+  assert.ok(msg.includes(codigo));
+  assert.ok(msg.includes('turma.html'));
+  item.querySelector('[data-cancelar]').click();
+  await settle(window, 30);
+  assert.equal(gas.admin(gas.login(), 'listar').codigos[0].status, 'cancelado');
+});
+
+test('Painel: inscrição isenta aparece como "Isento" com o código usado', async (t) => {
+  const gas = createGas();
+  const { codigo } = gas.admin(gas.login(), 'gerarCodigo', {});
+  const b = inscricao(); b.codigoBonus = codigo;
+  const r = gas.post(b);
+  const { window, document } = await abrir(t, { gas });
+  await entrar(window, document);
+  const c = card(document, r.codigo);
+  assert.match(txt(c), /Isento/);
+  assert.match(txt(c), new RegExp(codigo));
+  assert.ok(c.querySelector('[data-msg="confirmacao"]'), 'pode enviar a confirmação com o grupo');
+});
