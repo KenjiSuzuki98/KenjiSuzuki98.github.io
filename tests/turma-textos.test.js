@@ -103,3 +103,11 @@ test('Nenhum dado pessoal no repositório (nenhum CPF válido fora dos testes) e
   assert.deepEqual(achados, []);
   assert.doesNotMatch(read('planilha/turma/Api.gs'), /ADMIN_SENHA\s*[:=]\s*['"]/);
 });
+
+test('Bônus Black Friday: textos dizem "pronta para aplicar" (nunca "faltando só aplicar")', () => {
+  for (const f of ['turma.html', 'mensagens/follow-up.md', 'mensagens/ultima-chamada.md']) {
+    const s = read(f);
+    assert.doesNotMatch(s, /faltando só aplicar/, f);
+    assert.match(s, /pronta para aplicar/, f);
+  }
+});

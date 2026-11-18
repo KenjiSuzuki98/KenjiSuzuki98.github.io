@@ -6,7 +6,7 @@
 
 Oi, [NOME]! Tudo bem? Passando para lembrar que a Turma 01 do **Do Zero ao Faixa Preta com Inteligência Artificial** começa na segunda (23/11), às 20h30.
 
-Pelo preço de tabela, o combo das 3 noites sai por R$ 249,90, com certificado de 6h e o bônus **Missão Black Friday: IA em Campo!**: você sai com a estratégia de marketing e vendas da Black Friday (27/11) pronta, faltando só aplicar.
+Pelo preço de tabela, o combo das 3 noites sai por R$ 249,90, com certificado de 6h e o bônus **Missão Black Friday: IA em Campo!**: você sai com a estratégia de marketing e vendas da Black Friday (27/11) pronta para aplicar.
 
 São **vagas limitadas**. Quer que eu te mande o link? https://kenjisuzuki98.github.io/turma.html
 

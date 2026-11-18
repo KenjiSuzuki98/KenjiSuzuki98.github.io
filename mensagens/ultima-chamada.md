@@ -8,7 +8,7 @@ Amanhã (segunda, 23/11), às 20h30, começa o **Do Zero ao Faixa Preta com Inte
 2️⃣ Ter 24/11 · Dominando o Arsenal de IA (vendas)
 3️⃣ Qua 25/11 · A Arte do Impacto: Criação Audiovisual com IA (criação)
 
-🎁 Bônus **Missão Black Friday: IA em Campo!** para todos: você sai com a estratégia da Black Friday (27/11) pronta, faltando só aplicar.
+🎁 Bônus **Missão Black Friday: IA em Campo!** para todos: você sai com a estratégia da Black Friday (27/11) pronta para aplicar.
 📜 Certificado de 6h para quem fizer as 3 noites.
 
 📍 Avenida 19, nº 2306, Barretos/SP · recepção 19h50
