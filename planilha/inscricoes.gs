@@ -66,7 +66,7 @@ function doGet() {
 const ABA_CERT = 'Certificados';
 const CAB_CERT = ['Data/hora', 'Turma', 'Código', 'Nome no certificado', 'Celular', 'E-mail', 'Empresa/profissão', 'Quer novidades', 'WhatsApp (link)'];
 const ABA_AVAL = 'Avaliações';
-const CAB_AVAL = ['Data/hora', 'Turma', 'Código', 'Nome', 'Indicaria (0-10)', 'Nota geral (1-5)', 'Aplicação que gostaria de criar', 'Conteúdo aplicável', 'Didática (1-5)', 'Ritmo', 'O que mais gostou', 'O que melhorar', 'Próximo passo', 'Autoriza depoimento'];
+const CAB_AVAL = ['Data/hora', 'Turma', 'Código', 'Nome', 'Indicaria (0-10)', 'Nota geral (1-5)', 'Conteúdo aplicável', 'Didática (1-5)', 'Ritmo', 'O que mais gostou', 'O que melhorar', 'Aplicação que gostaria de criar', 'Próximo passo', 'Autoriza depoimento'];
 const ABA_IND = 'Indicações';
 const CAB_IND = ['Data/hora', 'Turma', 'Indicado por', 'Celular de quem indicou', 'Nome indicado', 'Telefone', 'Empresa', 'WhatsApp (link)', 'Contatado?'];
 
@@ -106,8 +106,8 @@ function certificado(d) {
     cert.appendRow(linhaCert(agora, turma, codigo, nome, celular, email, a));
   }
 
-  aba(ss, ABA_AVAL, CAB_AVAL).appendRow([agora, turma, codigo, seguro(nome), nps, geral, seguro(aplicacao),
-    opcao(p.aplicavel), num(p.didatica), opcao(p.ritmo), seguro(texto(p.gostou, 500)), seguro(texto(p.melhorar, 500)),
+  aba(ss, ABA_AVAL, CAB_AVAL).appendRow([agora, turma, codigo, seguro(nome), nps, geral,
+    opcao(p.aplicavel), num(p.didatica), opcao(p.ritmo), seguro(texto(p.gostou, 500)), seguro(texto(p.melhorar, 500)), seguro(aplicacao),
     opcao(p.proximo), p.depoimento === true ? 'Sim' : 'Não']);
 
   const abaInd = aba(ss, ABA_IND, CAB_IND);

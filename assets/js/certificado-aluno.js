@@ -155,12 +155,12 @@
   const PERGUNTAS = [
     { id: 'nps', req: true, tipo: 'escala', de: 0, ate: 10, txt: 'De 0 a 10, quanto você indicaria este treinamento para um amigo ou colega?', min: 'Nada provável', max: 'Com certeza' },
     { id: 'geral', req: true, tipo: 'escala', de: 1, ate: 5, txt: 'Qual sua nota geral para o treinamento?', min: 'Ruim', max: 'Excelente' },
-    { id: 'aplicacao', req: true, tipo: 'texto', txt: 'Qual aplicação você gostaria de criar que revolucionaria seu negócio ou dia a dia?', dica: 'Ex.: um app que responde clientes no WhatsApp, um controle de estoque que avisa quando acabar…' },
     { id: 'aplicavel', tipo: 'opcoes', txt: 'O conteúdo serve para o seu dia a dia ou trabalho?', ops: ['Sim, muito', 'Em parte', 'Pouco'] },
     { id: 'didatica', tipo: 'escala', de: 1, ate: 5, txt: 'Como foi a didática do instrutor?', min: 'Ruim', max: 'Excelente' },
     { id: 'ritmo', tipo: 'opcoes', txt: 'O ritmo das aulas foi…', ops: ['Rápido demais', 'Na medida', 'Devagar demais'] },
     { id: 'gostou', tipo: 'texto', txt: 'O que você mais gostou?' },
     { id: 'melhorar', tipo: 'texto', txt: 'O que podemos melhorar?' },
+    { id: 'aplicacao', req: true, tipo: 'texto', txt: 'Qual aplicação você gostaria de criar que revolucionaria seu negócio ou dia a dia?', dica: 'Ex.: um app que responde clientes no WhatsApp, um controle de estoque que avisa quando acabar…' },
     { id: 'proximo', tipo: 'opcoes', txt: 'Quer continuar aprendendo com a gente?', ops: ['Quero saber da próxima turma', 'Quero IA na minha empresa', 'Agora não'] },
   ];
 
@@ -187,7 +187,7 @@
     const v = state.pesquisa || {};
     box.innerHTML = `
       <h2>Avaliação rápida</h2>
-      <p class="muted-text">Sua opinião ajuda a melhorar as próximas turmas. Só as 3 primeiras são obrigatórias.</p>
+      <p class="muted-text">Sua opinião ajuda a melhorar as próximas turmas. As perguntas com * são obrigatórias.</p>
       <form id="fPesquisa" novalidate>
         ${PERGUNTAS.map((p) => pergunta(p, v[p.id])).join('')}
         <label class="check-field">
