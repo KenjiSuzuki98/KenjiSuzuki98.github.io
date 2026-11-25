@@ -46,6 +46,18 @@ O token fica salvo apenas no navegador onde você fez login. Para sair, use o bo
 
 Passo a passo: `docs/turma1-instalacao.md`. Ensaio antes de publicar: `docs/turma1-ensaio.md`.
 
+## Certificado pós-aula (QR Code no slide)
+
+- `certificado.html`: o aluno escaneia o QR Code (`divulgacao/qr-certificado.svg` ou `.gif`) e passa por
+  4 etapas: dados do certificado → avaliação rápida → 2 indicações → baixa o certificado em PDF ou PNG.
+- O certificado é montado no próprio celular sobre a arte `assets/certificado/modelo.png`.
+  Sem a arte, a página usa um modelo padrão.
+- Textos, turma, posição do nome e da arte: `assets/js/certificado-config.js`.
+- As respostas vão para a **mesma planilha das inscrições** da aula, em 3 abas novas:
+  **Certificados**, **Avaliações** e **Indicações**. Para ativar, cole a versão nova de
+  `planilha/inscricoes.gs` no Apps Script e publique uma **nova versão** da mesma implantação
+  (Implantar → Gerenciar implantações → lápis → Nova versão). A URL continua a mesma.
+
 ## Pagamentos via Pix
 
 - Na aba **Pix** do painel, configure a chave padrão, o nome do recebedor e a cidade.

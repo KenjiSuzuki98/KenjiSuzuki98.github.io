@@ -1,5 +1,7 @@
 /**
  * Recebe as inscrições da aula gratuita (aula.html) e grava numa planilha Google.
+ * Também recebe o formulário do certificado (certificado.html): dados do aluno,
+ * avaliação e indicações, em abas próprias da mesma planilha.
  *
  * Como ativar (uma vez só, cerca de 5 minutos):
  *  1. Crie uma planilha nova no Google Planilhas (ex.: "Inscrições - Aula IA").
@@ -25,6 +27,7 @@ function doPost(e) {
   try {
     const d = JSON.parse((e && e.postData && e.postData.contents) || '{}');
     if (d.website) return resposta({ ok: true }); // robô preencheu o campo escondido
+    if (d.tipo === 'certificado') return certificado(d);
 
     const nome = texto(d.nome, 120);
     let celular = String(d.celular || '').replace(/\D/g, '');
@@ -57,6 +60,91 @@ function doPost(e) {
 // Abrir a URL no navegador mostra se o script está no ar.
 function doGet() {
   return resposta({ ok: true, mensagem: 'Recebendo inscrições.' });
+}
+
+// ---------- Certificado (certificado.html) ----------
+const ABA_CERT = 'Certificados';
+const CAB_CERT = ['Data/hora', 'Turma', 'Código', 'Nome no certificado', 'Celular', 'E-mail', 'Empresa/profissão', 'Quer novidades', 'WhatsApp (link)'];
+const ABA_AVAL = 'Avaliações';
+const CAB_AVAL = ['Data/hora', 'Turma', 'Código', 'Nome', 'Indicaria (0-10)', 'Nota geral (1-5)', 'Aplicação que gostaria de criar', 'Conteúdo aplicável', 'Didática (1-5)', 'Ritmo', 'O que mais gostou', 'O que melhorar', 'Próximo passo', 'Autoriza depoimento'];
+const ABA_IND = 'Indicações';
+const CAB_IND = ['Data/hora', 'Turma', 'Indicado por', 'Celular de quem indicou', 'Nome indicado', 'Telefone', 'Empresa', 'WhatsApp (link)', 'Contatado?'];
+
+function certificado(d) {
+  const turma = texto(d.turma, 60);
+  const a = d.dados || {};
+  const nome = texto(a.nome, 90);
+  const celular = fone(a.celular);
+  const email = texto(a.email, 160).toLowerCase();
+  const p = d.pesquisa || {};
+  const nps = Number(p.nps), geral = Number(p.geral);
+  const aplicacao = texto(p.aplicacao, 500);
+  const ind = (Array.isArray(d.indicacoes) ? d.indicacoes : []).slice(0, 2)
+    .map((x) => ({ nome: texto(x && x.nome, 90), tel: fone(x && x.telefone), empresa: texto(x && x.empresa, 90) }))
+    .filter((x) => x.nome.length >= 2 && x.tel);
+
+  if (nome.length < 5 || !celular || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
+      || !(nps >= 0 && nps <= 10) || !(geral >= 1 && geral <= 5) || aplicacao.length < 5) {
+    return resposta({ ok: false, erro: 'dados inválidos' });
+  }
+
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const cert = aba(ss, ABA_CERT, CAB_CERT);
+  const agora = new Date();
+  // Mesma pessoa pedindo de novo na mesma turma: mantém o código e atualiza o nome.
+  let codigo = '';
+  const linhas = cert.getDataRange().getValues();
+  for (let i = 1; i < linhas.length; i++) {
+    if (linhas[i][1] === turma && (String(linhas[i][5]).toLowerCase() === email || String(linhas[i][4]).replace(/\D/g, '') === celular)) {
+      codigo = String(linhas[i][2]);
+      cert.getRange(i + 1, 1, 1, CAB_CERT.length).setValues([linhaCert(agora, turma, codigo, nome, celular, email, a)]);
+      break;
+    }
+  }
+  if (!codigo) {
+    codigo = novoCodigo(texto(d.prefixo, 10) || 'CERT');
+    cert.appendRow(linhaCert(agora, turma, codigo, nome, celular, email, a));
+  }
+
+  aba(ss, ABA_AVAL, CAB_AVAL).appendRow([agora, turma, codigo, seguro(nome), nps, geral, seguro(aplicacao),
+    opcao(p.aplicavel), num(p.didatica), opcao(p.ritmo), seguro(texto(p.gostou, 500)), seguro(texto(p.melhorar, 500)),
+    opcao(p.proximo), p.depoimento === true ? 'Sim' : 'Não']);
+
+  const abaInd = aba(ss, ABA_IND, CAB_IND);
+  ind.forEach((x) => abaInd.appendRow([agora, turma, seguro(nome), "'" + celular, seguro(x.nome), "'" + x.tel, seguro(x.empresa), 'https://wa.me/' + x.tel, 'Não']));
+
+  return resposta({ ok: true, codigo: codigo });
+}
+
+function linhaCert(agora, turma, codigo, nome, celular, email, a) {
+  return [agora, turma, codigo, seguro(nome), "'" + celular, seguro(email), seguro(texto(a.empresa, 90)), a.novidades === true ? 'Sim' : 'Não', 'https://wa.me/' + celular];
+}
+
+function novoCodigo(prefixo) {
+  const abc = '23456789ABCDEFGHJKMNPQRSTUVWXYZ';
+  let c = '';
+  for (let i = 0; i < 6; i++) c += abc.charAt(Math.floor(Math.random() * abc.length));
+  return prefixo.replace(/[^A-Za-z0-9]/g, '') + '-' + c;
+}
+
+// Telefone brasileiro com DDD: devolve 55 + número, ou '' se inválido.
+function fone(v) {
+  let n = String(v || '').replace(/\D/g, '');
+  if (n.length === 10 || n.length === 11) n = '55' + n;
+  return /^55\d{10,11}$/.test(n) ? n : '';
+}
+const opcao = (v) => seguro(texto(v, 60));
+const num = (v) => (v === '' || v == null || isNaN(Number(v)) ? '' : Number(v));
+
+function aba(ss, nome, cabecalho) {
+  let a = ss.getSheetByName(nome);
+  if (!a) {
+    a = ss.insertSheet(nome);
+    a.appendRow(cabecalho);
+    a.setFrozenRows(1);
+    a.getRange(1, 1, 1, cabecalho.length).setFontWeight('bold');
+  }
+  return a;
 }
 
 function linha(evento, nome, celular, email, ofertas) {

@@ -23,7 +23,7 @@ function futureStart(days = 3) {
   const d = new Date(Date.now() + days * 86400000 - 3 * 3600000);
   return d.toISOString().slice(0, 11) + '20:30';
 }
-const ALL_PAGES = [...PUBLIC_PAGES, 'admin.html', 'turma-admin.html', 'certificado-turma1.html'];
+const ALL_PAGES = [...PUBLIC_PAGES, 'admin.html', 'turma-admin.html', 'certificado-turma1.html', 'certificado.html'];
 
 // Site de exemplo com todos os campos preenchidos, para testar a renderização.
 function fullData(overrides = {}) {
